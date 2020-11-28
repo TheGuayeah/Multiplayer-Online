@@ -18,6 +18,7 @@ public class LobbyOnlineController : MonoBehaviour
 
     public void PlayGame()
     {
+        playFab.StartGame();
         SceneManager.LoadScene("MainOnline");
     }
 

@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
+using UnityEngine.Networking;
 
 public class PlayFabController : MonoBehaviour
 {
@@ -27,10 +29,18 @@ public class PlayFabController : MonoBehaviour
 
 
     [Header("User Settings")]
-    [SerializeField] private string userId;
-    [SerializeField] private string userName = "test";
+    [SerializeField] private string userName;
     [SerializeField] private string userEmail;
     [SerializeField] private string userPassword;
+
+
+    [Header("Game Settings")]
+    public string build;
+    public string gameMode;
+    public Region region;
+    public int serverPort;
+    public string secretKey;
+
 
     private void OnEnable()
     {
@@ -98,7 +108,7 @@ public class PlayFabController : MonoBehaviour
 
     private void OnLoginSuccess(LoginResult result)
     {
-        Debug.Log("Congratulations, you made your first successful API call!");
+        Debug.Log("Login Successful!");
         errorTxt.text = "";
         PlayerPrefs.SetString("EMAIL", userEmail);
         PlayerPrefs.SetString("PASSWORD", userPassword);
@@ -182,6 +192,58 @@ public class PlayFabController : MonoBehaviour
                     break;
             }
         }
+    }
+
+    public void StartGame()
+    {
+        build = PlayFabSettings.BuildIdentifier;
+        gameMode = PlayFabSettings.LocalApiServer;
+        secretKey = PlayFabSettings.DeveloperSecretKey;
+        serverPort = 7777;
+
+        var serverBuildUpload = new GetServerBuildUploadUrl()
+        {
+            BuildId = build
+        };
+        PlayFabClientAPI.GetServerBuildUploadUrl(serverBuildUpload, OnMachmakeSuccess, OnMatchmakeFailure);
+
+
+        var matchmakeReq = new MatchmakeRequest()
+        {
+            BuildVersion = "1.0",
+            GameMode = "Basic",
+            Region = Region.EUWest,
+            StartNewIfNoneFound = true
+        };
+        PlayFabClientAPI.Matchmake(matchmakeReq, OnMachmakeSuccess, OnMatchmakeFailure);
+    }
+
+    private void OnMachmakeSuccess(MatchmakeResult result)
+    {
+        Debug.Log("Matchmake done");
+        var req = new StartGameRequest()
+        {
+            BuildVersion = build,
+            GameMode = "Basic",
+            Region = Region.EUWest
+        };
+        PlayFabClientAPI.StartGame(req, OnStartSuccess, OnStartFailure);
+    }
+
+    private void OnMatchmakeFailure(PlayFabError error)
+    {
+        Debug.Log(error.GenerateErrorReport());
+    }
+
+    private void OnStartSuccess(StartGameResult result)
+    {
+        Debug.Log("STARTED GAME");
+        serverPort = (int)result.ServerPort;
+    }
+
+    private void OnStartFailure(PlayFabError error)
+    {
+        Debug.Log(error.GenerateErrorReport());
     }
 
     public void Back()
