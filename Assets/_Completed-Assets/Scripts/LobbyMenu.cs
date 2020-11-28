@@ -3,6 +3,8 @@ using UnityEngine;
 using Mirror;
 using Mirror.Discovery;
 using UnityEngine.UI;
+using PlayFab;
+using UnityEngine.SceneManagement;
 
 public class ServerMenuData {
     public ServerMenuData(ServerResponse response, int id, GameObject menuId) {
@@ -149,5 +151,10 @@ public class LobbyMenu : MonoBehaviour {
         if (!show) {
             networkDiscovery.StopDiscovery();
         }
+    }
+
+    public void Back()
+    {
+        SceneManager.LoadScene("SelectGameMode");
     }
 }

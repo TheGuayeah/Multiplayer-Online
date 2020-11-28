@@ -22,10 +22,16 @@ namespace Complete
 
         private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
         private NetworkStartPosition[] spawnPoints;
+        private PlayFabController playFab;
 
 
         private void Awake ()
         {
+            if (FindObjectOfType<PlayFabController>())
+            {
+                playFab = FindObjectOfType<PlayFabController>().GetComponent<PlayFabController>();
+            }
+
             // Instantiate the explosion prefab and get a reference to the particle system on it
             m_ExplosionParticles = Instantiate (m_ExplosionPrefab).GetComponent<ParticleSystem>();
 
@@ -57,6 +63,11 @@ namespace Complete
         {
             // When the tank is enabled, reset the tank's health and whether or not it's dead
             m_CurrentHealth = m_StartingHealth;
+            if (playFab != null)
+            {
+                playFab.playerHealth = m_CurrentHealth;
+                playFab.SetStats();
+            }
             m_Dead = false;
 
             // Update the health slider's value and color
@@ -73,6 +84,11 @@ namespace Complete
             
             // Reduce current health by the amount of damage done
             m_CurrentHealth -= amount;
+            if (playFab != null)
+            {
+                playFab.playerHealth = m_CurrentHealth;
+                playFab.SetStats();
+            }
 
             // Change the UI elements appropriately
             SetHealthUI();
