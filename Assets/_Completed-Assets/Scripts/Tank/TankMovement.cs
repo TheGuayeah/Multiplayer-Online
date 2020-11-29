@@ -126,7 +126,7 @@ namespace Complete
                 CmdSendNameAndColorToServer(PlayerPrefs.GetString("NickName"), PlayerPrefs.GetInt("Color"));
             }
 
-            textNickName.text = playerName;
+            if(textNickName) textNickName.text = playerName;
 
             ChangeTankAndNameColor();
         }

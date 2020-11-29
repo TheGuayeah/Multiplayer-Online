@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Steamworks;
+using PlayFab;
 
 public class SteamLobby : MonoBehaviour
 {
@@ -36,9 +37,10 @@ public class SteamLobby : MonoBehaviour
         if (calllback.m_eResult != EResult.k_EResultOK) return;
 
         LobbyID = new CSteamID(calllback.m_ulSteamIDLobby);
-        PlayerPrefs.SetString("NickName", LobbyID.ToString());
 
+        //PlayerPrefs.SetString("NickName", LobbyID.ToString());
         networkManager.StartHost();
+
 
         SteamMatchmaking.SetLobbyData(
             new CSteamID(calllback.m_ulSteamIDLobby), 

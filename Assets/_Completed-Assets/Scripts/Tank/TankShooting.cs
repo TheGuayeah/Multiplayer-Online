@@ -74,8 +74,39 @@ namespace Complete
             }
         }
 
+        public void OnNPC_Fire()
+        {
+            if (!isDisabled)
+            {
+                CmdFire_AI();
+            }
+        }
+
         [Command]
         void CmdFire()
+        {
+            var bullet = (GameObject)Instantiate(
+                bulletPrefab,
+                m_FireTransform.position,
+                m_FireTransform.rotation
+            );
+
+            NetworkServer.Spawn(bullet);
+
+            // Set the shell's velocity to the launch force in the fire position's forward direction
+            //bullet.GetComponent<Rigidbody>().velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+
+            // Change the clip to the firing clip and play it
+            m_ShootingAudio.clip = m_FireClip;
+            m_ShootingAudio.Play();
+
+            // Reset the launch force.  This is a precaution in case of missing button events
+            m_CurrentLaunchForce = m_MinLaunchForce;
+
+            Destroy(bullet, 2.0f);
+        }
+
+        void CmdFire_AI()
         {
             var bullet = (GameObject)Instantiate(
                 bulletPrefab,

@@ -30,7 +30,7 @@ namespace Complete
             m_navAgent = GetComponent<NavMeshAgent>();
             m_tankShootingScript = GetComponent<TankShooting>();
             transform.position = new Vector3(Random.Range(-m_TerrainXDistance, m_TerrainXDistance), 0, Random.Range(-m_TerrainZDistance, m_TerrainZDistance));
-            AddToTankList();
+            AddToTankList(gameObject);
         }
 
         void Update()
@@ -63,11 +63,11 @@ namespace Complete
                 m_navAgent.stoppingDistance = m_ShootingDistance;
                 if (maxDist <= m_ShootingDistance)
                 {
-                    m_tankShootingScript.enabled = true;
                     m_time += Time.deltaTime;
                     if (m_time >= 2f)
                     {
-                        //m_tankShootingScript.NPC_Fire();
+                        m_tankShootingScript.enabled = true;
+                        m_tankShootingScript.OnNPC_Fire();
                         m_time = 0;
                     }
                 }
@@ -75,11 +75,12 @@ namespace Complete
             }
         }
 
-        private void AddToTankList()
+        private void AddToTankList(GameObject gameObj)
         {
             TankManager tank = new TankManager();
             // Hacemos referencia al objeto del tanque
-            tank.m_Instance = gameObject;
+            tank.m_Instance = gameObj;
+            tank.m_PlayerNumber = 0;
 
             // Cambiamos el color del tanque según si es el del usuario o el de otro jugador
             //tank.m_PlayerColor = gameManager.m_AiColor;
