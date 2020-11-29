@@ -153,6 +153,7 @@ namespace Complete
                 // Set the player's position to the chosen spawn point
                 transform.position = spawnPoint;
             }
-        }
+        }
+
     }
 }
