@@ -201,11 +201,11 @@ public class PlayFabController : MonoBehaviour
         secretKey = PlayFabSettings.DeveloperSecretKey;
         serverPort = 7777;
 
-        var serverBuildUpload = new GetServerBuildUploadUrl()
-        {
-            BuildId = build
-        };
-        PlayFabClientAPI.GetServerBuildUploadUrl(serverBuildUpload, OnMachmakeSuccess, OnMatchmakeFailure);
+        //var serverBuildUpload = new GetServerBuildUploadUrl()
+        //{
+        //    BuildId = build
+        //};
+        //PlayFabClientAPI.GetServerBuildUploadUrl(serverBuildUpload, OnMachmakeSuccess, OnMatchmakeFailure);
 
 
         var matchmakeReq = new MatchmakeRequest()
