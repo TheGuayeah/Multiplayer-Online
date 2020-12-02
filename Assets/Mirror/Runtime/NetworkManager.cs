@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using kcp2k;
+using Steamworks;
 
 namespace Mirror
 {

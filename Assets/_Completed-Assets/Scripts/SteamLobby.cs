@@ -37,8 +37,9 @@ public class SteamLobby : MonoBehaviour
         if (calllback.m_eResult != EResult.k_EResultOK) return;
 
         LobbyID = new CSteamID(calllback.m_ulSteamIDLobby);
+        var name = SteamFriends.GetFriendPersonaName(LobbyID);
 
-        //PlayerPrefs.SetString("NickName", LobbyID.ToString());
+        PlayerPrefs.SetString("NickName", name);
         networkManager.StartHost();
 
 

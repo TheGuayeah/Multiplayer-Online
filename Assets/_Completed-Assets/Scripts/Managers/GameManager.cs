@@ -40,7 +40,6 @@ namespace Complete
         public void SetPlayersTanks()
         {
             GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
-            Debug.Log("tanksInGame.length: " + tanksInGame.Length);
             foreach (var tank in tanksInGame)
             {
                 AddToTankList(tank);

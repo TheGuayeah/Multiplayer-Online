@@ -13,9 +13,6 @@ public class InfoPlayer : NetworkBehaviour
     public void SetSteamId(ulong steamId_)
     {
         steamId = steamId_;
-        var cSteamId = new CSteamID(steamId_);
-        var name = SteamFriends.GetFriendPersonaName(cSteamId);
-        PlayerPrefs.SetString("NickName", name);
     }
 
     private void HandleSteamIdUpadated(ulong oldSteamId, ulong newSteamId)
