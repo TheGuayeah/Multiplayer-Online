@@ -4,10 +4,14 @@ using UnityEngine;
 using Steamworks;
 using Mirror;
 using TMPro;
+using UnityEngine.UI;
 
 public class InfoPlayer : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(HandleSteamIdUpadated))]
+    [SerializeField]
+    private Text playerText; 
+
+    [SyncVar(hook = nameof(HandleSteamIdUpdated))]
     private ulong steamId;
 
     public void SetSteamId(ulong steamId_)
@@ -15,10 +19,13 @@ public class InfoPlayer : NetworkBehaviour
         steamId = steamId_;
     }
 
-    private void HandleSteamIdUpadated(ulong oldSteamId, ulong newSteamId)
+    private void HandleSteamIdUpdated(ulong oldSteamId, ulong newSteamId)
     {
         var cSteamId = new CSteamID(newSteamId);
         var name = SteamFriends.GetFriendPersonaName(cSteamId);
-        PlayerPrefs.SetString("NickName", name);
+        if (isLocalPlayer) {
+            PlayerPrefs.SetString("NickName", name);
+        }
+        playerText.text = name;
     }
 }

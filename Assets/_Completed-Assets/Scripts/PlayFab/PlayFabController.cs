@@ -18,6 +18,8 @@ public class PlayFabController : MonoBehaviour
     public Button backBtn;
     public Button registerBtn;
     public TextMeshProUGUI errorTxt;
+    public GameObject loginForm;
+    public GameObject loading;
 
     [Header("Player Stats")]
     public float playerHealth;
@@ -71,6 +73,9 @@ public class PlayFabController : MonoBehaviour
             userEmail = PlayerPrefs.GetString("EMAIL", "");
             userPassword = PlayerPrefs.GetString("PASSWORD", "");
             GuiLogIn();
+        } else {
+            loginForm.SetActive(true);
+            loading.SetActive(false);
         }
     }
 
@@ -114,6 +119,8 @@ public class PlayFabController : MonoBehaviour
 
     private void OnLoginFailure(PlayFabError error)
     {
+        loginForm.SetActive(true);
+        loading.SetActive(false);
         Debug.Log("OnLoginFailure: " + error.GenerateErrorReport());
         errorTxt.text = "Error haciendo el login.";
     }

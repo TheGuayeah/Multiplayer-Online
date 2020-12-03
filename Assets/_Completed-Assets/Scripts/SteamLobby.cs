@@ -29,6 +29,7 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
+        GetComponent<LobbyMenu>().SetColor();
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, networkManager.maxConnections);
     }
 
@@ -45,7 +46,8 @@ public class SteamLobby : MonoBehaviour
 
         SteamMatchmaking.SetLobbyData(
             new CSteamID(calllback.m_ulSteamIDLobby), 
-            HostAddresKey, SteamUser.GetSteamID().ToString());
+            HostAddresKey, 
+            SteamUser.GetSteamID().ToString());
     }
 
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)

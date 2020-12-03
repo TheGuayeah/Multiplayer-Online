@@ -6,10 +6,8 @@ using Steamworks;
 
 public class MyNetworkManager : NetworkManager
 {
-    public override void OnServerAddPlayer(NetworkConnection conn)
-    {
+    public override void OnServerAddPlayer(NetworkConnection conn) {
         base.OnServerAddPlayer(conn);
-
         CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(
             SteamLobby.LobbyID,
             numPlayers - 1);
