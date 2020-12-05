@@ -130,7 +130,7 @@ public class LobbyMenu : MonoBehaviour {
         }
     }
 
-    private void SetColor() {
+    public void SetColor() {
         PlayerPrefs.SetInt("Color", currentColorIdx);
     }
 

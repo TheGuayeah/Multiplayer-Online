@@ -16,12 +16,6 @@ public class LobbyOnlineController : MonoBehaviour
         }
     }
 
-    public void PlayGame()
-    {
-        playFab.StartGame();
-        SceneManager.LoadScene("MainOnline");
-    }
-
     public void Back()
     {
         PlayFabClientAPI.ForgetAllCredentials();

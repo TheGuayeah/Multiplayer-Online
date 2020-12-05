@@ -39,14 +39,14 @@ namespace Complete
             m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
 
             // Get all of the renderers of the tank
-            MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer> ();
+            //MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer> ();
 
             // Go through all the renderers...
-            for (int i = 0; i < renderers.Length; i++)
+            /*for (int i = 0; i < renderers.Length; i++)
             {
                 // ... set their material color to the color specific to this tank
                 renderers[i].material.color = m_PlayerColor;
-            }
+            }*/
         }
 
 

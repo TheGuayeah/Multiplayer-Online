@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -29,25 +31,66 @@ namespace Complete
             m_StartWait = new WaitForSeconds (m_StartDelay);
             m_EndWait = new WaitForSeconds (m_EndDelay);
 
-            SpawnAllTanks();
-            SetCameraTargets();
+            Invoke("SetPlayersTanks", 1f);
 
             // Once the tanks have been created and the camera is using them as targets, start the game
             StartCoroutine (GameLoop ());
         }
 
+        public void SetPlayersTanks()
+        {
+            GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var tank in tanksInGame)
+            {
+                AddToTankList(tank);
+            }
+            SetCameraTargets();
+        }
+
+        private void AddToTankList(GameObject gameObj)
+        {
+            TankManager tank = new TankManager();
+            // Hacemos referencia al objeto del tanque
+            tank.m_Instance = gameObj;
+            tank.m_PlayerNumber = 0;
+
+            // Cambiamos el color del tanque según si es el del usuario o el de otro jugador
+            //tank.m_PlayerColor = gameManager.m_AiColor;
+
+            // Configuramos los componentes del tanque
+            tank.Setup();
+
+            // Añadimos el tanque completamente configurado a la lista del GameManager
+            List<TankManager> tempTanks = m_Tanks.ToList();
+            tempTanks.Add(tank);
+            m_Tanks = tempTanks.ToArray();
+
+            // Reconfiguramos la lista de objetivos de la cámara
+            //gameManager.SetCameraTargets();
+        }
+
+        public void RemoveFromTankList(TankManager tankObj)
+        {
+            // Eliminamos el tanque completamente configurado a la lista del GameManager
+            List<TankManager> tempTanks = m_Tanks.ToList();
+            tempTanks.Remove(tankObj);
+            m_Tanks = tempTanks.ToArray();
+
+            // Reconfiguramos la lista de objetivos de la cámara
+            //gameManager.SetCameraTargets();
+        }
 
         private void SpawnAllTanks()
         {
+            //GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
             // For all the tanks...
-            /*for (int i = 0; i < m_Tanks.Length; i++)
-            {
-                // ... create them, set their player number and references needed for control
-                m_Tanks[i].m_Instance =
-                    Instantiate (m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
-                m_Tanks[i].m_PlayerNumber = i + 1;
-                m_Tanks[i].Setup();
-            }*/
+            //for (int i = 0; i < tanksInGame.Length; i++)
+            //{
+            //    // ... create them, set their player number and references needed for control
+            //    m_Tanks[i].m_Instance = Instantiate(m_TankPrefab, tanksInGame[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
+            //    m_Tanks[i].m_PlayerNumber = i + 1;
+            //    m_Tanks[i].Setup();
+            //}
         }
 
 

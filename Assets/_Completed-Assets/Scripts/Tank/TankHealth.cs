@@ -22,6 +22,7 @@ namespace Complete
 
         private bool m_Dead;                                // Has the tank been reduced beyond zero health yet?
         private NetworkStartPosition[] spawnPoints;
+        private GameManager gameManager;
         private PlayFabController playFab;
 
 
@@ -31,6 +32,8 @@ namespace Complete
             {
                 playFab = FindObjectOfType<PlayFabController>().GetComponent<PlayFabController>();
             }
+
+            gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
 
             // Instantiate the explosion prefab and get a reference to the particle system on it
             m_ExplosionParticles = Instantiate (m_ExplosionPrefab).GetComponent<ParticleSystem>();
@@ -128,6 +131,7 @@ namespace Complete
 
             // Turn the tank off
             gameObject.SetActive (false);
+            //gameManager.RemoveFromTankList(gameObject);
         }
 
         private void OnChangeHealth(float oldHealth, float newHealth)
@@ -153,6 +157,7 @@ namespace Complete
                 // Set the player's position to the chosen spawn point
                 transform.position = spawnPoint;
             }
-        }
+        }
+
     }
 }

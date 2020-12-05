@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using System;
-using UnityEngine.Networking;
 
 public class PlayFabController : MonoBehaviour
 {
@@ -20,6 +18,8 @@ public class PlayFabController : MonoBehaviour
     public Button backBtn;
     public Button registerBtn;
     public TextMeshProUGUI errorTxt;
+    public GameObject loginForm;
+    public GameObject loading;
 
     [Header("Player Stats")]
     public float playerHealth;
@@ -29,18 +29,13 @@ public class PlayFabController : MonoBehaviour
 
 
     [Header("User Settings")]
-    [SerializeField] private string userName;
+    [SerializeField] private string userId;
+    [SerializeField] private string userName = "test";
     [SerializeField] private string userEmail;
     [SerializeField] private string userPassword;
 
-
-    [Header("Game Settings")]
-    public string build;
-    public string gameMode;
-    public Region region;
-    public int serverPort;
-    public string secretKey;
-
+    public string build = PlayFabSettings.BuildIdentifier;
+    public string gameMode = PlayFabSettings.LocalApiServer;
 
     private void OnEnable()
     {
@@ -60,6 +55,7 @@ public class PlayFabController : MonoBehaviour
 
     public void Start()
     {
+        //NetworkClient _network;
         errorTxt.text = "";
         userNameInput.onValueChanged.AddListener(delegate { OnChangeUserName(); });
         userEmailInput.onValueChanged.AddListener(delegate { OnChangeEmail(); });
@@ -77,6 +73,9 @@ public class PlayFabController : MonoBehaviour
             userEmail = PlayerPrefs.GetString("EMAIL", "");
             userPassword = PlayerPrefs.GetString("PASSWORD", "");
             GuiLogIn();
+        } else {
+            loginForm.SetActive(true);
+            loading.SetActive(false);
         }
     }
 
@@ -103,12 +102,13 @@ public class PlayFabController : MonoBehaviour
             Password = userPassword
         };
 
+        //PlayFab.GetServedrBuildUploadUrl();
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
     }
 
     private void OnLoginSuccess(LoginResult result)
     {
-        Debug.Log("Login Successful!");
+        Debug.Log("Congratulations, you made your first successful API call!");
         errorTxt.text = "";
         PlayerPrefs.SetString("EMAIL", userEmail);
         PlayerPrefs.SetString("PASSWORD", userPassword);
@@ -119,6 +119,8 @@ public class PlayFabController : MonoBehaviour
 
     private void OnLoginFailure(PlayFabError error)
     {
+        loginForm.SetActive(true);
+        loading.SetActive(false);
         Debug.Log("OnLoginFailure: " + error.GenerateErrorReport());
         errorTxt.text = "Error haciendo el login.";
     }
@@ -192,58 +194,6 @@ public class PlayFabController : MonoBehaviour
                     break;
             }
         }
-    }
-
-    public void StartGame()
-    {
-        build = PlayFabSettings.BuildIdentifier;
-        gameMode = PlayFabSettings.LocalApiServer;
-        secretKey = PlayFabSettings.DeveloperSecretKey;
-        serverPort = 7777;
-
-        //var serverBuildUpload = new GetServerBuildUploadUrl()
-        //{
-        //    BuildId = build
-        //};
-        //PlayFabClientAPI.GetServerBuildUploadUrl(serverBuildUpload, OnMachmakeSuccess, OnMatchmakeFailure);
-
-
-        var matchmakeReq = new MatchmakeRequest()
-        {
-            BuildVersion = "1.0",
-            GameMode = "Basic",
-            Region = Region.EUWest,
-            StartNewIfNoneFound = true
-        };
-        PlayFabClientAPI.Matchmake(matchmakeReq, OnMachmakeSuccess, OnMatchmakeFailure);
-    }
-
-    private void OnMachmakeSuccess(MatchmakeResult result)
-    {
-        Debug.Log("Matchmake done");
-        var req = new StartGameRequest()
-        {
-            BuildVersion = build,
-            GameMode = "Basic",
-            Region = Region.EUWest
-        };
-        PlayFabClientAPI.StartGame(req, OnStartSuccess, OnStartFailure);
-    }
-
-    private void OnMatchmakeFailure(PlayFabError error)
-    {
-        Debug.Log(error.GenerateErrorReport());
-    }
-
-    private void OnStartSuccess(StartGameResult result)
-    {
-        Debug.Log("STARTED GAME");
-        serverPort = (int)result.ServerPort;
-    }
-
-    private void OnStartFailure(PlayFabError error)
-    {
-        Debug.Log(error.GenerateErrorReport());
     }
 
     public void Back()
