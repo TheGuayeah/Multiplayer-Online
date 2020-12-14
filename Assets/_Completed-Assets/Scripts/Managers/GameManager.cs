@@ -23,7 +23,7 @@ namespace Complete
         private WaitForSeconds m_EndWait;           // Used to have a delay whilst the round or game ends
         private TankManager m_RoundWinner;          // Reference to the winner of the current round.  Used to make an announcement of who won
         private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won
-
+        
 
         private void Start()
         {
@@ -79,20 +79,6 @@ namespace Complete
             // Reconfiguramos la lista de objetivos de la cámara
             //gameManager.SetCameraTargets();
         }
-
-        private void SpawnAllTanks()
-        {
-            //GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
-            // For all the tanks...
-            //for (int i = 0; i < tanksInGame.Length; i++)
-            //{
-            //    // ... create them, set their player number and references needed for control
-            //    m_Tanks[i].m_Instance = Instantiate(m_TankPrefab, tanksInGame[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
-            //    m_Tanks[i].m_PlayerNumber = i + 1;
-            //    m_Tanks[i].Setup();
-            //}
-        }
-
 
         private void SetCameraTargets()
         {
@@ -205,9 +191,7 @@ namespace Complete
         // This is used to check if there is one or fewer tanks remaining and thus the round should end
         private bool OneTankLeft()
         {
-            // Skip all rounds logic
-
-/*            // Start the count of tanks left at zero.
+            // Start the count of tanks left at zero.
             int numTanksLeft = 0;
 
             // Go through all the tanks...
@@ -219,9 +203,7 @@ namespace Complete
             }
 
             // If there are one or fewer tanks remaining return true, otherwise return false.
-            return numTanksLeft <= 1; */
-
-            return false;
+            return numTanksLeft <= 1;
         }
         
         

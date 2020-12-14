@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Complete
 {
@@ -73,8 +74,11 @@ namespace Complete
         // Used at the start of each round to put the tank into it's default state
         public void Reset ()
         {
-            m_Instance.transform.position = m_SpawnPoint.position;
-            m_Instance.transform.rotation = m_SpawnPoint.rotation;
+            //m_Instance.transform.position = m_SpawnPoint.position;
+            //m_Instance.transform.rotation = m_SpawnPoint.rotation;
+
+            m_Instance.transform.position= 
+                new Vector3(Random.Range(-40, 40), 0, Random.Range(-40, 40));
 
             m_Instance.SetActive (false);
             m_Instance.SetActive (true);
