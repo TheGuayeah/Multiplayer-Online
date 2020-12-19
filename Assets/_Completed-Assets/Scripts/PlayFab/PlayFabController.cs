@@ -112,9 +112,15 @@ public class PlayFabController : MonoBehaviour
         errorTxt.text = "";
         PlayerPrefs.SetString("EMAIL", userEmail);
         PlayerPrefs.SetString("PASSWORD", userPassword);
+
+        PlayFabClientAPI.UpdateUserTitleDisplayName(new UpdateUserTitleDisplayNameRequest { DisplayName = userName }, OnDisplayName, OnLoginFailure);
         SetStats();
         GetStats();
         SceneManager.LoadScene("LobbyOnline");
+    }
+
+    void OnDisplayName(UpdateUserTitleDisplayNameResult result) {
+        Debug.Log(result.DisplayName + " is your new display name");
     }
 
     private void OnLoginFailure(PlayFabError error)
