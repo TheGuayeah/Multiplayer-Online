@@ -23,6 +23,8 @@ namespace Complete
         public CinemachineVirtualCamera[] m_PlayersFollowCams;
         public GameObject[] m_PlayersCams;
         public GameObject[] m_PanelsEnterPlayers;
+        public GameObject Player3;
+        public GameObject Player4;
 
         private int m_RoundNumber;                  // Which round the game is currently on
         private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts
@@ -517,6 +519,8 @@ namespace Complete
             {
                 m_NumPlayers--;
                 m_NumPlayersTxt.text = m_NumPlayers.ToString();
+                Player3.SetActive(m_NumPlayers > 2);
+                Player4.SetActive(m_NumPlayers > 3);
             }
         }
 
@@ -526,6 +530,8 @@ namespace Complete
             {
                 m_NumPlayers++;
                 m_NumPlayersTxt.text = m_NumPlayers.ToString();
+                Player3.SetActive(m_NumPlayers > 2);
+                Player4.SetActive(m_NumPlayers > 3);
             }
         }
 
