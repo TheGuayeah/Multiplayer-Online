@@ -80,20 +80,32 @@ namespace Complete
             //gameManager.SetCameraTargets();
         }
 
-        private void SetCameraTargets()
+        public void SetCameraTargets()
         {
+            if (m_Tanks.Length == 0)
+            {
+                TankHealth[] tempPlayers = FindObjectsOfType<TankHealth>();
+                TankManager[] tempAllTanks = new TankManager[tempPlayers.Length];
+
+                foreach (var item in tempPlayers)
+                {
+                    tempAllTanks.ToList().Add(item.GetComponent<TankManager>());
+                }
+                m_Tanks = tempAllTanks;
+            }
+
             // Create a collection of transforms the same size as the number of tanks
             Transform[] targets = new Transform[m_Tanks.Length];
 
             // For each of these transforms...
-            for (int i = 0; i < targets.Length; i++)
+            for (int i = 0; i < m_Tanks.Length; i++)
             {
                 // ... set it to the appropriate tank transform
-                targets[i] = m_Tanks[i].m_Instance.transform;
+                if (m_Tanks[i].m_Instance != null) targets[i] = m_Tanks[i].m_Instance.transform;
             }
 
             // These are the targets the camera should follow
-            //m_CameraControl.m_Targets = targets;
+            m_CameraControl.m_Targets = targets;
         }
 
 

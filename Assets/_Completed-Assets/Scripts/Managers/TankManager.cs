@@ -56,7 +56,7 @@ namespace Complete
             // Create a string using the correct color that says 'PLAYER 1' etc based on the tank's color and the player's number
             m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
 
-            m_playerName = m_Movement.playerName;
+            //m_playerName = m_Movement.playerName;
 
             // Get all of the renderers of the tank
             MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer> ();
@@ -108,14 +108,32 @@ namespace Complete
         // Used at the start of each round to put the tank into it's default state
         public void Reset ()
         {
+
+
             //m_Instance.transform.position = m_SpawnPoint.position;
             //m_Instance.transform.rotation = m_SpawnPoint.rotation;
 
-            m_Instance.transform.position= 
-                new Vector3(Random.Range(-40, 40), 0, Random.Range(-40, 40));
+            Respawn();
 
             m_Instance.SetActive (false);
             m_Instance.SetActive (true);
+        }
+
+        void Respawn()
+        {
+            float randomX = Random.Range(-40, 40);
+            float randomZ = Random.Range(-40, 40);
+
+            m_Instance.transform.position = new Vector3(randomX, 0, randomZ);
+
+            RaycastHit hit;
+            if (Physics.Raycast(new Ray(m_Instance.transform.position, Vector3.down), out hit, 100f))
+                m_Instance.transform.position = hit.point + new Vector3(0, 1, 0);
+            if(hit.collider != null)
+            {
+                if (hit.collider.CompareTag("Building"))
+                    Respawn();
+            }
         }
     }
 }
