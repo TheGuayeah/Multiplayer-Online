@@ -19,7 +19,8 @@ namespace Complete
         [HideInInspector] public string m_ColoredPlayerText;    // A string that represents the player with their number colored to match their tank
         [HideInInspector] public GameObject m_Instance;         // A reference to the instance of the tank when it is created
         [HideInInspector] public int m_Wins;                    // The number of wins this player has so far
-        
+        public bool isTeamGame;
+        public bool team1;
 
         private TankMovement m_Movement;                        // Reference to tank's movement script, used to disable and enable control
         private TankShooting m_Shooting;                        // Reference to tank's shooting script, used to disable and enable control

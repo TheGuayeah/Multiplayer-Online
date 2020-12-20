@@ -26,6 +26,7 @@ namespace Complete
         public GameObject Player3;
         public GameObject Player4;
 
+        private LocalTeamsManager localTeamsManager;
         private int m_RoundNumber;                  // Which round the game is currently on
         private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts
         private WaitForSeconds m_EndWait;           // Used to have a delay whilst the round or game ends
@@ -41,6 +42,7 @@ namespace Complete
             m_MessageText.gameObject.SetActive(false);
             m_NumPlayersTxt.text = m_NumPlayers.ToString();
             m_TanksStore = m_Tanks;
+            localTeamsManager = FindObjectOfType<LocalTeamsManager>().GetComponent<LocalTeamsManager>();
         }
 
         private void StartGame()
@@ -74,6 +76,11 @@ namespace Complete
                     m_Tanks[i].m_PlayerNumber = i + 1;
                     m_Tanks[i].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[i];
                     m_Tanks[i].Setup();
+
+                    TankHealthLocal tankHealth = m_Tanks[i].m_Instance.GetComponent<TankHealthLocal>();
+                    tankHealth.isTeamGame = m_Tanks[i].isTeamGame;
+                    tankHealth.team1 = m_Tanks[i].team1;
+
                     m_PlayersFollowCams[i].gameObject.SetActive(true);
                     m_PlayersFollowCams[i].Follow = m_Tanks[i].m_Instance.transform;
                     m_PlayersFollowCams[i].LookAt = m_Tanks[i].m_Instance.transform;
@@ -540,9 +547,17 @@ namespace Complete
             TankManager[] newTanks = new TankManager[m_NumPlayers];
             for (int i = 0; i < m_TanksStore.Length; i++)
             {
+                Color colorTeam1 = Color.red;
+                Color colorTeam2 = Color.blue;
+
                 if (i < m_NumPlayers)
                 {
                     newTanks[i] = m_TanksStore[i];
+                    newTanks[i].isTeamGame= localTeamsManager.activeTeams;
+                    newTanks[i].team1 = localTeamsManager.playerTeams[i];
+
+                    if (newTanks[i].isTeamGame)
+                        newTanks[i].m_PlayerColor = newTanks[i].team1 ?  colorTeam1 : colorTeam2;
                 }
             }
             m_Tanks = newTanks;
@@ -560,6 +575,7 @@ namespace Complete
         public void PlayGameBtn()
         {
             m_PanelNumPlayersUI.SetActive(false);
+
             SetActiveTanks();
             StartGame();
         }
