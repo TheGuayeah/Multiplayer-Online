@@ -52,7 +52,7 @@ namespace Complete
                 }
 
 
-                if(targetHealth.isTeamGame && targetHealth.team1 != myTankHealth.team1)
+                if(!targetHealth.isTeamGame || targetHealth.team1 != myTankHealth.team1)
                 {
                     // Calculate the amount of damage the target should take based on it's distance from the shell
                     float damage = CalculateDamage(targetRigidbody.position);
