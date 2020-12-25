@@ -106,7 +106,6 @@ namespace Complete
             Destroy(bullet, 2.0f);
         }
 
-        [Command]
         void CmdFire_AI()
         {
             var bullet = (GameObject)Instantiate(
