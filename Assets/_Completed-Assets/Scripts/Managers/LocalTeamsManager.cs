@@ -44,4 +44,11 @@ public class LocalTeamsManager : MonoBehaviour
             TextTeam2[player - 1].SetActive(!playerTeams[player - 1]);
         }
     }
+
+    public void UpdateTeamUIPositions() {
+        for(int i = 0; i< playerTeams.Length; i++) {
+            TextTeam1[i].SetActive(playerTeams[i]);
+            TextTeam2[i].SetActive(!playerTeams[i]);
+        }
+    }
 }

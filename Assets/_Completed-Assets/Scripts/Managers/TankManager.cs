@@ -18,7 +18,7 @@ namespace Complete
         [HideInInspector] public int m_PlayerNumber;            // This specifies which player this the manager for
         [HideInInspector] public string m_ColoredPlayerText;    // A string that represents the player with their number colored to match their tank
         [HideInInspector] public GameObject m_Instance;         // A reference to the instance of the tank when it is created
-        [HideInInspector] public int m_Wins;                    // The number of wins this player has so far
+        public int m_Wins;                    // The number of wins this player has so far
         public bool isTeamGame;
         public bool team1;
 
@@ -54,9 +54,12 @@ namespace Complete
                 m_ShootingLocal.m_PlayerNumber = m_PlayerNumber;
             }
 
-            // Create a string using the correct color that says 'PLAYER 1' etc based on the tank's color and the player's number
-            m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
-
+            m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">";
+            if (isTeamGame)
+                m_ColoredPlayerText += "TEAM " + (team1 ? "1" : "2");
+            else
+                m_ColoredPlayerText += "PLAYER " + m_PlayerNumber;
+            m_ColoredPlayerText += " </color>";
             //m_playerName = m_Movement.playerName;
 
             // Get all of the renderers of the tank

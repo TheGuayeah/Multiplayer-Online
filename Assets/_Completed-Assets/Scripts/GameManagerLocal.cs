@@ -10,6 +10,7 @@ namespace Complete
 {
     public class GameManagerLocal : MonoBehaviour
     {
+        public GameObject mainCamera;
         public int m_NumRoundsToWin = 5;            // The number of rounds a single player has to win to win the game
         public float m_StartDelay = 3f;             // The delay between the start of RoundStarting and RoundPlaying phases
         public float m_EndDelay = 3f;               // The delay between the end of RoundPlaying and RoundEnding phases
@@ -36,6 +37,9 @@ namespace Complete
         private TankManager[] m_TanksStore;
         List<int> m_deadTanks = new List<int>();
 
+        private bool gameRunning = false;
+
+
         private void Start()
         {
             m_PanelNumPlayersUI.SetActive(true);
@@ -47,6 +51,7 @@ namespace Complete
 
         private void StartGame()
         {
+            gameRunning = true;
             m_MessageText.gameObject.SetActive(true);
 
             // Create the delays so they only have to be made once
@@ -58,13 +63,14 @@ namespace Complete
             SetCameraTargets();
 
             // Once the tanks have been created and the camera is using them as targets, start the game
-            StartCoroutine(GameLoop());
+            if (!localTeamsManager.activeTeams || !OneTeamLeft())
+                StartCoroutine(GameLoop());
         }
 
 		
 		private void SpawnAllTanks()
 		{
-			Camera mainCam = GameObject.Find ("Main Camera").GetComponent<Camera>();
+			Camera mainCam = mainCamera.GetComponent<Camera>();
 
 			// For all the tanks...
 			for (int i = 0; i < m_Tanks.Length; i++)
@@ -212,91 +218,95 @@ namespace Complete
 
         public void P3EnterPlayer(InputAction.CallbackContext context)
         {
-            var val = context.ReadValue<float>();
-            if (val == 1)
-            {
-                try{
-                    //Check if the tank already exists
-                    var num = m_Tanks[2].m_PlayerNumber;
+            if (gameRunning) {
+                var val = context.ReadValue<float>();
+                if (val == 1) {
+                    try {
+                        //Check if the tank already exists
+                        var num = m_Tanks[2].m_PlayerNumber;
 
-                    if (num != 3)
-                    {
-                        m_TanksStore[2].m_Instance = Instantiate(m_TankPrefab, m_TanksStore[2].m_SpawnPoint.position, m_TanksStore[2].m_SpawnPoint.rotation) as GameObject;
-                        m_TanksStore[2].m_PlayerNumber = 3;
-                        m_TanksStore[2].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[2];
-                        m_TanksStore[2].Setup();
-                        m_PlayersFollowCams[2].gameObject.SetActive(true);
-                        m_PlayersFollowCams[2].Follow = m_TanksStore[2].m_Instance.transform;
-                        m_PlayersFollowCams[2].LookAt = m_TanksStore[2].m_Instance.transform;
+                        if (num != 3)
+                            AddPlayer(3);
 
-                        m_NumPlayers++;
-                        SetActiveTanks();
-                        SetCamerasLayout();
-                    }
-                }
-                catch
-                {
-                    //If the tank do not exist, create it.
-                    if (m_TanksStore[2] != null)
-                    {
-                        m_TanksStore[2].m_Instance = Instantiate(m_TankPrefab, m_TanksStore[2].m_SpawnPoint.position, m_TanksStore[2].m_SpawnPoint.rotation) as GameObject;
-                        m_TanksStore[2].m_PlayerNumber = 3;
-                        m_TanksStore[2].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[2];
-                        m_TanksStore[2].Setup();
-                        m_PlayersFollowCams[2].gameObject.SetActive(true);
-                        m_PlayersFollowCams[2].Follow = m_TanksStore[2].m_Instance.transform;
-                        m_PlayersFollowCams[2].LookAt = m_TanksStore[2].m_Instance.transform;
-
-                        m_NumPlayers++;
-                        SetActiveTanks();
-                        SetCamerasLayout();
+                    } catch {
+                        //If the tank do not exist, create it.
+                        if (m_TanksStore[2] != null)
+                            AddPlayer(3);
                     }
                 }
             }
         }
+
+        
 
         public void P4EnterPlayer(InputAction.CallbackContext context)
         {
-            var val = context.ReadValue<float>();
-            if (val == 1)
-            {
-                try
-                {
-                    //Check if the tank already exists
-                    var num = m_Tanks[2].m_PlayerNumber;
+            if (gameRunning) {
+                var val = context.ReadValue<float>();
+                if (val == 1) {
+                    try {
+                        //Check if the tank already exists
+                        var num = m_Tanks[2].m_PlayerNumber;
 
-                    if (m_NumPlayers == 3)
-                    {
-                        m_TanksStore[3].m_Instance = Instantiate(m_TankPrefab, m_TanksStore[3].m_SpawnPoint.position, m_TanksStore[3].m_SpawnPoint.rotation) as GameObject;
-                        m_TanksStore[3].m_PlayerNumber = 4;
-                        m_TanksStore[3].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[3];
-                        m_TanksStore[3].Setup();
-                        m_PlayersFollowCams[3].gameObject.SetActive(true);
-                        m_PlayersFollowCams[3].Follow = m_TanksStore[3].m_Instance.transform;
-                        m_PlayersFollowCams[3].LookAt = m_TanksStore[3].m_Instance.transform;
-
-                        m_NumPlayers++;
-                        SetActiveTanks();
-                        SetCamerasLayout();
+                        if (m_NumPlayers == 3)
+                            AddPlayer(4);
+                    } catch {
+                        AddPlayer(3);
                     }
-                }
-                catch
-                {
-                    m_TanksStore[2].m_Instance = Instantiate(m_TankPrefab, m_TanksStore[2].m_SpawnPoint.position, m_TanksStore[2].m_SpawnPoint.rotation) as GameObject;
-                    m_TanksStore[2].m_PlayerNumber = 3;
-                    m_TanksStore[2].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[2];
-                    m_TanksStore[2].Setup();
-                    m_PlayersFollowCams[2].gameObject.SetActive(true);
-                    m_PlayersFollowCams[2].Follow = m_TanksStore[2].m_Instance.transform;
-                    m_PlayersFollowCams[2].LookAt = m_TanksStore[2].m_Instance.transform;
-
-                    m_NumPlayers++;
-                    SetActiveTanks();
-                    SetCamerasLayout();
                 }
             }
         }
 
+        private void AddPlayer(int player) {
+            bool oneTeamLeft = OneTeamLeft();
+
+            CheckPlayerTeam(player-1);
+            
+            int wins = 0;
+            if (localTeamsManager.activeTeams) {
+                for(int i = 0; i <m_Tanks.Length; i++) {
+                    if (m_Tanks[i].team1 == localTeamsManager.playerTeams[player - 1])
+                        wins = m_Tanks[i].m_Wins;
+                }
+            }
+
+            m_NumPlayers++;
+            SetActiveTanks();
+
+            m_TanksStore[player-1].m_Instance = Instantiate(m_TankPrefab, m_TanksStore[player - 1].m_SpawnPoint.position, m_TanksStore[player - 1].m_SpawnPoint.rotation) as GameObject;
+            m_TanksStore[player - 1].m_PlayerNumber = player;
+            m_TanksStore[player - 1].m_Instance.GetComponent<PlayerInput>().actions = m_InputTanks[player - 1];
+            m_TanksStore[player - 1].Setup();
+
+            TankHealthLocal tankHealth = m_Tanks[player - 1].m_Instance.GetComponent<TankHealthLocal>();
+            tankHealth.isTeamGame = m_Tanks[player - 1].isTeamGame;
+            tankHealth.team1 = m_Tanks[player - 1].team1;
+
+            m_PlayersFollowCams[player - 1].gameObject.SetActive(true);
+            m_PlayersFollowCams[player - 1].Follow = m_TanksStore[player - 1].m_Instance.transform;
+            m_PlayersFollowCams[player - 1].LookAt = m_TanksStore[player - 1].m_Instance.transform;
+
+            if (localTeamsManager.activeTeams) {
+                m_Tanks[player - 1].m_Wins = wins;
+            }
+
+            SetCamerasLayout();
+
+            if (localTeamsManager.activeTeams && player == 3 && oneTeamLeft) 
+                StartCoroutine(GameLoop());
+        }
+
+        private void CheckPlayerTeam(int pos) {
+            if (localTeamsManager.activeTeams) {
+                bool team1 = localTeamsManager.playerTeams[pos];
+                int sameTeam = 0;
+                for (int i = 0; i < pos; i++)
+                    if (m_Tanks[i].team1 == team1)
+                        sameTeam++;
+                if (sameTeam > 1)
+                    localTeamsManager.playerTeams[pos] = !localTeamsManager.playerTeams[pos];
+            }
+        }
 
         private void SetCameraTargets()
         {
@@ -331,7 +341,7 @@ namespace Complete
             if (m_GameWinner != null)
             {
                 // If there is a game winner, restart the level
-                SceneManager.LoadScene (0);
+                RestartGame();
             }
             else
             {
@@ -339,6 +349,35 @@ namespace Complete
                 // Note that this coroutine doesn't yield.  This means that the current version of the GameLoop will end
                 StartCoroutine (GameLoop());
             }
+        }
+
+        private void RestartGame() {
+            m_PanelNumPlayersUI.SetActive(true);
+            m_MessageText.gameObject.SetActive(false);
+
+            m_RoundNumber = 0;
+            mainCamera.SetActive(true);
+            m_CameraControl.m_Targets = new Transform[0];
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                m_PlayersFollowCams[i].gameObject.SetActive(false);
+                m_PlayersCams[i].gameObject.SetActive(false);
+                m_Tanks[i].m_Wins = 0;
+                if (m_Tanks[i].m_Instance.activeSelf)
+                    Destroy(m_Tanks[i].m_Instance);
+            }
+            m_PanelsEnterPlayers[2].gameObject.SetActive(false);
+            m_PanelsEnterPlayers[3].gameObject.SetActive(false);
+
+            UpdateMenuUI();
+        }
+
+        private void UpdateMenuUI() {
+            m_NumPlayersTxt.text = m_NumPlayers.ToString();
+            if (m_NumPlayers > 2) 
+                Player3.SetActive(true);
+            if (m_NumPlayers > 3)
+                Player4.SetActive(true);
+            localTeamsManager.UpdateTeamUIPositions();
         }
 
 
@@ -369,7 +408,7 @@ namespace Complete
             m_MessageText.text = string.Empty;
 
             // While there is not one tank left...
-            while (!OneTankLeft())
+            while ((!localTeamsManager.activeTeams && !OneTankLeft()) || (localTeamsManager.activeTeams && !OneTeamLeft()))
             {
                 // ... return on the next frame
                 yield return null;
@@ -389,14 +428,20 @@ namespace Complete
             m_RoundWinner = GetRoundWinner();
 
             // If there is a winner, increment their score
-            if (m_RoundWinner != null)
+            if (m_RoundWinner != null) {
                 m_RoundWinner.m_Wins++;
+                if(localTeamsManager.activeTeams){
+                    for (int i = 0; i < m_Tanks.Length; i++) 
+                        if (m_Tanks[i].m_PlayerNumber != m_RoundWinner.m_PlayerNumber && m_RoundWinner.team1 == m_Tanks[i].team1)
+                            m_Tanks[i].m_Wins++;
+                }
+            }
 
             // Now the winner's score has been incremented, see if someone has one the game
             m_GameWinner = GetGameWinner();
 
             // Get a message based on the scores and whether or not there is a game winner and display it
-            string message = EndMessage();
+            string message = localTeamsManager.activeTeams ? EndMessageTeams() : EndMessage();
             m_MessageText.text = message;
 
             // Wait for the specified length of time until yielding control back to the game loop
@@ -421,8 +466,27 @@ namespace Complete
             // If there are one or fewer tanks remaining return true, otherwise return false
             return numTanksLeft <= 1;
         }
-        
-        
+
+        private bool OneTeamLeft() {
+            // Start the count of tanks left at zero
+            int team1TanksLeft = 0;
+            int team2TanksLeft = 0;
+
+            // Go through all the tanks...
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                // ... and if they are active, increment the counter
+                if (m_Tanks[i].m_Instance.activeSelf) {
+                    if (m_Tanks[i].team1)
+                        team1TanksLeft++;
+                    else
+                        team2TanksLeft++;
+                }
+            }
+
+            return team1TanksLeft == 0 || team2TanksLeft == 0;
+        }
+
+
         // This function is to find out if there is a winner of the round
         // This function is called with the assumption that 1 or fewer tanks are currently active
         private TankManager GetRoundWinner()
@@ -449,7 +513,7 @@ namespace Complete
             for (int i = 0; i < m_Tanks.Length; i++)
             {
                 // ... and if one of them has enough rounds to win the game, return it
-                if (m_Tanks[i].m_Wins == m_NumRoundsToWin)
+                if (m_Tanks[i].m_Wins >= m_NumRoundsToWin)
                 {
                     return m_Tanks[i];
                 }
@@ -484,6 +548,42 @@ namespace Complete
             // If there is a game winner, change the entire message to reflect that
             if (m_GameWinner != null)
             {
+                message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
+            }
+
+            return message;
+        }
+
+        private string EndMessageTeams() {
+            // By default when a round ends there are no winners so the default end message is a draw
+            string message = "DRAW!";
+
+            // If there is a winner then change the message to reflect that
+            if (m_RoundWinner != null) {
+                message = m_RoundWinner.m_ColoredPlayerText + " WINS THE ROUND!";
+            }
+
+            // Add some line breaks after the initial message
+            message += "\n\n\n\n";
+
+            // Go through all the tanks and add each of their scores to the message
+            
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                if (m_Tanks[i].team1) {
+                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Wins + " WINS\n";
+                    break;
+                }
+            }
+
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                if (!m_Tanks[i].team1) {
+                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Wins + " WINS\n";
+                    break;
+                }
+            }
+
+            // If there is a game winner, change the entire message to reflect that
+            if (m_GameWinner != null) {
                 message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
             }
 
@@ -578,6 +678,10 @@ namespace Complete
 
             SetActiveTanks();
             StartGame();
+        }
+
+        public void BackBtn() {
+            SceneManager.LoadScene(0);
         }
 
         public void ChangeDeadCamera(int deadPlayerNum)

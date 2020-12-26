@@ -16,7 +16,8 @@ namespace Complete
 
         private void Start ()
         {
-            GetComponent<Rigidbody>().velocity = transform.forward * 15;
+            GetComponent<Rigidbody>().velocity = transform.forward * 15;
+
             // If it isn't destroyed by then, destroy the shell after it's lifetime
             Destroy(gameObject, m_MaxLifeTime);
         }
@@ -52,7 +53,7 @@ namespace Complete
                 }
 
 
-                if(targetHealth.isTeamGame && targetHealth.team1 != myTankHealth.team1)
+                if(!targetHealth.isTeamGame || targetHealth.team1 != myTankHealth.team1)
                 {
                     // Calculate the amount of damage the target should take based on it's distance from the shell
                     float damage = CalculateDamage(targetRigidbody.position);
