@@ -61,6 +61,8 @@ namespace Complete
                     AddToTankList(tank);
                 }
 
+                //CheckTanksDistance();
+
                 initGame = true;
             }
             else //Una vez iniciada la partida, si entra un nuevo jugador, solo añade ese jugador al array
@@ -94,6 +96,25 @@ namespace Complete
             // Reconfiguramos la lista de objetivos de la cámara
             //gameManager.SetCameraTargets();
         }
+
+        /*private void CheckTanksDistance()
+        {
+            for (int x = 0; x < m_Tanks.Length; x++)
+            {
+                for (int y = x+1; y < m_Tanks.Length; y++)
+                {
+                    Vector3 tank1 = m_Tanks[x].m_Instance.transform.position;
+                    Vector3 tank2 = m_Tanks[y].m_Instance.transform.position;
+
+
+                    if (Vector3.Distance(tank1, tank2) < 7)
+                    {
+                        m_Tanks[x].Respawn();
+                        CheckTanksDistance();
+                    }
+                }
+            }
+        }*/
 
         public void RemoveFromTankList(TankManager tankObj)
         {

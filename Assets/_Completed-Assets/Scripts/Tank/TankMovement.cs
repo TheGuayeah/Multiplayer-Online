@@ -34,11 +34,14 @@ namespace Complete
         private InputAction m_MoveAction;           // Move Action reference (Unity 2020 New Input System)
         private InputAction m_TurnAction;           // Turn Action reference (Unity 2020 New Input System)
         private bool isDisabled = false;            // To avoid enabling / disabling Input System when tank is destroyed
+        private GameManager gameManager;
 
 
         private void Awake()
         {
             m_Rigidbody = GetComponent<Rigidbody>();
+            gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
+            CheckTanksDistance();
         }
 
         [Command]
@@ -242,6 +245,28 @@ namespace Complete
 
                 // Apply this rotation to the rigidbody's rotation
                 m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+            }
+        }
+
+        private void CheckTanksDistance()
+        {
+            if(gameManager.m_Tanks.Length > 1)
+            {
+                for (int x = 0; x < gameManager.m_Tanks.Length; x++)
+                {
+                    for (int y = x + 1; y < gameManager.m_Tanks.Length; y++)
+                    {
+                        Vector3 tank1 = gameManager.m_Tanks[x].m_Instance.transform.position;
+                        Vector3 tank2 = gameManager.m_Tanks[y].m_Instance.transform.position;
+
+
+                        if (Vector3.Distance(tank1, tank2) < 7)
+                        {
+                            gameManager.m_Tanks[x].Respawn();
+                            CheckTanksDistance();
+                        }
+                    }
+                }
             }
         }
     }

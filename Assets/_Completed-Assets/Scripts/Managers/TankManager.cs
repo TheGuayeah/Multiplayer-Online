@@ -127,7 +127,7 @@ namespace Complete
             m_Instance.SetActive (true);
         }
 
-        void Respawn()
+        public void Respawn()
         {
             float randomX = Random.Range(-40, 40);
             float randomZ = Random.Range(-40, 40);
