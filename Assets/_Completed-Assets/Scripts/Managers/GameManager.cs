@@ -16,13 +16,16 @@ namespace Complete
         public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc
         public GameObject m_TankPrefab;             // Reference to the prefab the players will control
         public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks
+        public NumberPlayers numberPlayers;
 
-        
         private int m_RoundNumber;                  // Which round the game is currently on
         private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts
         private WaitForSeconds m_EndWait;           // Used to have a delay whilst the round or game ends
         private TankManager m_RoundWinner;          // Reference to the winner of the current round.  Used to make an announcement of who won
         private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won
+        
+        private int initNumberPlayers;
+        private bool initGame= false;
         
 
         private void Start()
@@ -37,14 +40,37 @@ namespace Complete
             StartCoroutine (GameLoop ());
         }
 
+        private void Update()
+        {
+            //Cuando entra un nuevo jugador, se actualiza el array de m_Tanks
+            if (initNumberPlayers > 0 && initNumberPlayers < numberPlayers.currentNumberPlayers)
+            {
+                SetPlayersTanks();
+            }
+        }
+
         public void SetPlayersTanks()
         {
             GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
-            foreach (var tank in tanksInGame)
+
+            //Al comienzo de iniciar la partida el jugador, añade todos los tanques Player al array.
+            if(!initGame)
             {
-                AddToTankList(tank);
+                foreach (var tank in tanksInGame)
+                {
+                    AddToTankList(tank);
+                }
+
+                initGame = true;
             }
+            else //Una vez iniciada la partida, si entra un nuevo jugador, solo añade ese jugador al array
+            {
+                AddToTankList(tanksInGame[tanksInGame.Length-1]);
+            }
+            
             SetCameraTargets();
+
+            initNumberPlayers = numberPlayers.currentNumberPlayers;
         }
 
         private void AddToTankList(GameObject gameObj)

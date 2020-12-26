@@ -60,7 +60,11 @@ namespace Complete
             else
                 m_ColoredPlayerText += "PLAYER " + m_PlayerNumber;
             m_ColoredPlayerText += " </color>";
-            //m_playerName = m_Movement.playerName;
+
+            if(m_Movement)
+            {
+                m_playerName = m_Movement.playerName;
+            }
 
             // Get all of the renderers of the tank
             MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer> ();
