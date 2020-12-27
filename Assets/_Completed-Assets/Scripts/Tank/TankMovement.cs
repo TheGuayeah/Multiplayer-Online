@@ -12,6 +12,8 @@ namespace Complete
         public string playerName;
         [SyncVar]
         public int playerColor;
+        [SyncVar]
+        public bool team1;
 
         public int m_PlayerNumber = 1;              // Used to identify which tank belongs to which player.  This is set by this tank's manager
         public float m_Speed = 12f;                 // How fast the tank moves forward and back
@@ -248,7 +250,7 @@ namespace Complete
             }
         }
 
-        private void CheckTanksDistance()
+        public void CheckTanksDistance()
         {
             if(gameManager.m_Tanks.Length > 1)
             {

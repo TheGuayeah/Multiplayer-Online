@@ -35,9 +35,11 @@ namespace Complete
 
         void Update()
         {
-            SetPlayerObjective();
+            if(isServer)
+                SetPlayerObjective();
         }
 
+        
         private void SetPlayerObjective()
         {
             var maxDist = Mathf.Infinity;

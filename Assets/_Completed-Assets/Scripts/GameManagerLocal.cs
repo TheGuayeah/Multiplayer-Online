@@ -59,6 +59,7 @@ namespace Complete
             m_EndWait = new WaitForSeconds(m_EndDelay);
 
             SpawnAllTanks();
+
             SetCamerasLayout();
             SetCameraTargets();
 
@@ -95,7 +96,12 @@ namespace Complete
                 }
 			}
 
-			mainCam.gameObject.SetActive (false);
+            foreach (var tank in m_Tanks)
+            {
+                tank.m_Instance.GetComponent<TankMovementLocal>().CheckTanksDistance();
+            }
+
+            mainCam.gameObject.SetActive (false);
 		}
 
 		private void AddCamera (int i, Camera mainCam)
