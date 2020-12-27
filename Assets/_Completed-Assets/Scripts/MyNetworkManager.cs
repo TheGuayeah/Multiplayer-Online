@@ -4,16 +4,20 @@ using UnityEngine;
 using Mirror;
 using Steamworks;
 
-public class MyNetworkManager : NetworkManager
+namespace Complete
 {
-    public override void OnServerAddPlayer(NetworkConnection conn) {
-        base.OnServerAddPlayer(conn);
-        CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(
-            SteamLobby.LobbyID,
-            numPlayers - 1);
+    public class MyNetworkManager : NetworkManager
+    {
+        public override void OnServerAddPlayer(NetworkConnection conn)
+        {
+            base.OnServerAddPlayer(conn);
+            CSteamID steamId = SteamMatchmaking.GetLobbyMemberByIndex(
+                SteamLobby.LobbyID,
+                numPlayers - 1);
 
-        var playerInfoDisplay = conn.identity.GetComponent<InfoPlayer>();
+            var playerInfoDisplay = conn.identity.GetComponent<InfoPlayer>();
 
-        playerInfoDisplay.SetSteamId(steamId.m_SteamID);
+            playerInfoDisplay.SetSteamId(steamId.m_SteamID);
+        }
     }
 }
