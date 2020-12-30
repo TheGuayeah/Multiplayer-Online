@@ -12,7 +12,7 @@ namespace Complete
         // and whether or not players have control of their tank in the 
         // different phases of the game
 
-        public String m_playerName;
+        public string m_playerName;
         public Color m_PlayerColor;                             // This is the color this tank will be tinted
         public Transform m_SpawnPoint;                          // The position and direction the tank will have when it spawns
         [HideInInspector] public int m_PlayerNumber;            // This specifies which player this the manager for
@@ -22,7 +22,7 @@ namespace Complete
         public bool isTeamGame;
         public bool team1;
 
-        private TankMovement m_Movement;                        // Reference to tank's movement script, used to disable and enable control
+        public TankMovement m_Movement;                        // Reference to tank's movement script, used to disable and enable control
         private TankShooting m_Shooting;                        // Reference to tank's shooting script, used to disable and enable control
         private TankMovementLocal m_MovementLocal;                        // Reference to tank's movement script, used to disable and enable control
         private TankShootingLocal m_ShootingLocal;                        // Reference to tank's shooting script, used to disable and enable control

@@ -18,6 +18,7 @@ namespace Complete
         public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks
         public NumberPlayers numberPlayers;
 
+
         private int m_RoundNumber;                  // Which round the game is currently on
         private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts
         private WaitForSeconds m_EndWait;           // Used to have a delay whilst the round or game ends
@@ -73,6 +74,11 @@ namespace Complete
             SetCameraTargets();
 
             initNumberPlayers = numberPlayers.currentNumberPlayers;
+            Invoke("UpdateUI", 2f);
+        }
+
+        private void UpdateUI() {
+            numberPlayers.UiSetup();
         }
 
         private void AddToTankList(GameObject gameObj)

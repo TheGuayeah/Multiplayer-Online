@@ -11,74 +11,19 @@ namespace Complete
     public class InfoPlayer : NetworkBehaviour
     {
         [SerializeField]
-        private Text playerText;
+        public Text playerText;
 
-        [SyncVar]
+        [SyncVar(hook = nameof(ChangeTeamBool))]
         public bool team1 = true;
-
-        [SerializeField]
-        private GameObject teamItemPrefab;
-        [SerializeField]
-        private GameObject teamCanvasPrefab;
-        [SerializeField]
-        private GameObject teamCanvas;
-        [SerializeField]
-        private Transform team1Panel, team2Panel;
-        [SerializeField]
-        private Button teamBtn;
-
+        
         public GameObject myTeamItem;
+
+        public NumberPlayers numberPlayers;
 
         [SyncVar(hook = nameof(HandleSteamIdUpdated))]
         private ulong steamId;
 
-        private GameManager gameManager;
-
-        void Start()
-        {
-            gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
-            UiSetup();
-        }
-
-        private void UiSetup()
-        {
-            if(isLocalPlayer)
-                teamCanvas = Instantiate(teamCanvasPrefab);
-            teamBtn = teamCanvas.GetComponentInChildren<Button>();
-            teamBtn.onClick.AddListener(ChangeTeam);
-            team1Panel = GameObject.Find("Team1").transform;
-            team2Panel = GameObject.Find("Team2").transform;
-            Transform parent = team1 ? team1Panel : team2Panel;
-            GameObject item = Instantiate(teamItemPrefab, parent);
-            item.name = PlayerPrefs.GetString("NickName");
-            myTeamItem = item;
-            myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
-        }
-
-        public void ChangeTeam()
-        {
-            Debug.Log("ChangeTeam");
-            int team1Count = 0;
-            int team2Count = 0;
-            foreach (var item in gameManager.m_Tanks)
-            {
-                InfoPlayer player = item.m_Instance.GetComponent<InfoPlayer>();
-                if (player.team1)
-                    team1Count++;
-                else
-                    team2Count++;
-            }
-            if(!team1 && team1Count < 3)
-                team1 = true;
-            else if (team1 && team2Count < 3)
-                team1 = false;
-
-            Transform parent = team1 ? team1Panel : team2Panel;
-            myTeamItem.transform.parent = parent;
-        }
-
-        public void SetSteamId(ulong steamId_)
-        {
+        public void SetSteamId(ulong steamId_) {
             steamId = steamId_;
         }
 
@@ -91,6 +36,33 @@ namespace Complete
                 PlayerPrefs.SetString("NickName", name);
             }
             playerText.text = name;
+        }
+
+        public void SetTeamBool(bool newTeam1) {
+            team1 = newTeam1;
+            CmdUpdateUIPos();
+        }
+
+        private void ChangeTeamBool(bool oldTeam1, bool newTeam1) {
+            team1 = newTeam1;
+            CmdUpdateUIPos();
+        }
+
+        [Command]
+        private void CmdUpdateUIPos() {
+            RpcUpdateUIPos();
+        }
+
+        [ClientRpc]
+        private void RpcUpdateUIPos() {
+            if (myTeamItem != null) {
+                Transform parent = team1 ? numberPlayers.team1Panel : numberPlayers.team2Panel;
+                myTeamItem.transform.SetParent(parent);
+            }
+        }
+
+        public bool LocalPlayer() {
+            return isLocalPlayer;
         }
     }
 }
