@@ -38,28 +38,32 @@ namespace Complete
             playerText.text = name;
         }
 
-        public void SetTeamBool(bool newTeam1) {
+        [Command]
+        public void CmdSetTeamBool(bool newTeam1) {
             team1 = newTeam1;
-            CmdUpdateUIPos();
+            RpcSetTeamBool(newTeam1);
+        }
+
+        [ClientRpc]
+        public void RpcSetTeamBool(bool newTeam1) {
+            team1 = newTeam1;
+            UpdateUIPos();
         }
 
         private void ChangeTeamBool(bool oldTeam1, bool newTeam1) {
             team1 = newTeam1;
-            CmdUpdateUIPos();
         }
 
-        [Command]
-        private void CmdUpdateUIPos() {
-            RpcUpdateUIPos();
-        }
-
-        [ClientRpc]
-        private void RpcUpdateUIPos() {
+        private void UpdateUIPos() {
             if (myTeamItem != null) {
-                Transform parent = team1 ? numberPlayers.team1Panel : numberPlayers.team2Panel;
-                myTeamItem.transform.SetParent(parent);
+                RectTransform rt = myTeamItem.GetComponent<RectTransform>();
+                rt.localPosition = new Vector3(
+                    team1 ? numberPlayers.team1Panel.localPosition.x : numberPlayers.team2Panel.localPosition.x,
+                    rt.localPosition.y,
+                    rt.localPosition.z);
             }
         }
+        
 
         public bool LocalPlayer() {
             return isLocalPlayer;

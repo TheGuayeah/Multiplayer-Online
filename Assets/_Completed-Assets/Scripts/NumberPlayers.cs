@@ -40,17 +40,26 @@ namespace Complete {
 
         public void UiSetup() {
             UpdateTeamCount();
+            int count = 0;
             foreach (var tank in gameManager.m_Tanks) {
                 InfoPlayer player = tank.m_Instance.GetComponent<InfoPlayer>();
-                if (player != null && player.myTeamItem == null) {
-                    player.numberPlayers = this;
-                    //if (player.LocalPlayer())
+                if (player != null) {
+                    if (player.myTeamItem == null) {
+                        player.numberPlayers = this;
+                        //if (player.LocalPlayer())
                         //player.SetTeamBool(team1Count <= team2Count);
-                    Transform parent = player.team1 ? team1Panel : team2Panel;
-                    GameObject item = Instantiate(teamItemPrefab, parent);
-                    item.name = tank.m_Movement.playerName;
-                    player.myTeamItem = item;
-                    player.myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
+                        Transform parent = team1Panel.parent;
+                        GameObject item = Instantiate(teamItemPrefab, parent);
+                        item.name = tank.m_Movement.playerName;
+                        RectTransform rt = item.GetComponent<RectTransform>();
+                        rt.localPosition = new Vector3(
+                            player.team1 ? team1Panel.localPosition.x : team2Panel.localPosition.x,
+                            team1Panel.localPosition.y - (count * rt.sizeDelta.y),
+                            0.0f);
+                        player.myTeamItem = item;
+                        player.myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
+                    }
+                    count++;
                 }
             }
         }
@@ -61,9 +70,9 @@ namespace Complete {
                 InfoPlayer player = item.m_Instance.GetComponent<InfoPlayer>();
                 if (player != null && player.LocalPlayer()) {
                     if (!player.team1 && team1Count < 3)
-                        player.SetTeamBool(true);
+                        player.CmdSetTeamBool(true);
                     else if (player.team1 && team2Count < 3)
-                        player.SetTeamBool(false);
+                        player.CmdSetTeamBool(false);
                     break;
                 }
             }
