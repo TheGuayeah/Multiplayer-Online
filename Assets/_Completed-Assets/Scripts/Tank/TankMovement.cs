@@ -142,17 +142,7 @@ namespace Complete
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.G)) {
-                ChangeColor();
-            }
-
             EngineAudio();
-        }
-
-        public void ChangeColor() {
-            playerColor = (playerColor + 1) % LobbyMenu.tankColors.Length;
-            CmdSendNameAndColorToServer(playerName, playerColor);
-            ChangeTankAndNameColor();
         }
 
         private void ChangeTankAndNameColor() {

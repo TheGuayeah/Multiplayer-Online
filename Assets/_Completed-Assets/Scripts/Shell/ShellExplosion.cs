@@ -11,7 +11,7 @@ namespace Complete
         public float m_ExplosionForce = 1000f;              // The amount of force added to a tank at the centre of the explosion
         public float m_MaxLifeTime = 2f;                    // The time in seconds before the shell is removed
         public float m_ExplosionRadius = 5f;                // The maximum distance away from the explosion tanks can be and are still affected
-
+        public InfoPlayer myInfoPlayer;
 
         private void Start ()
         {
@@ -42,7 +42,8 @@ namespace Complete
                 targetRigidbody.AddExplosionForce (m_ExplosionForce, transform.position, m_ExplosionRadius);
 
                 // Find the TankHealth script associated with the rigidbody
-                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();
+                InfoPlayer targetInfo = targetRigidbody.GetComponent<InfoPlayer>();
+                TankHealth targetHealth= targetRigidbody.GetComponent<TankHealth>();
 
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider
                 if (!targetHealth)
@@ -50,11 +51,19 @@ namespace Complete
                     continue;
                 }
 
-                // Calculate the amount of damage the target should take based on it's distance from the shell
-                float damage = CalculateDamage (targetRigidbody.position);
-
-                // Deal this damage to the tank
-                targetHealth.TakeDamage (damage);
+                if (myInfoPlayer != null)
+                {
+                    if (targetInfo.team1 != myInfoPlayer.team1 && targetInfo != null)
+                    {
+                        Debug.Log("Myteam: "+ myInfoPlayer.team1);
+                        Debug.Log("TargetTeam: "+targetInfo.team1);
+                        DamageEnemy(targetRigidbody, targetHealth);
+                    }
+                }
+                else
+                {
+                    DamageEnemy(targetRigidbody, targetHealth);
+                }
             }
 
             // Unparent the particles from the shell
@@ -74,6 +83,14 @@ namespace Complete
             Destroy (gameObject);
         }
 
+        private void DamageEnemy(Rigidbody targetRigidbody, TankHealth targetHealth)
+        {
+            // Calculate the amount of damage the target should take based on it's distance from the shell
+            float damage = CalculateDamage(targetRigidbody.position);
+
+            // Deal this damage to the tank
+            targetHealth.TakeDamage(damage);
+        }
 
         private float CalculateDamage (Vector3 targetPosition)
         {

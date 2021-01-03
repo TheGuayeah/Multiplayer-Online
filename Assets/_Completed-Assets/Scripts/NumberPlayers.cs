@@ -68,11 +68,18 @@ namespace Complete {
             UpdateTeamCount();
             foreach (var item in gameManager.m_Tanks) {
                 InfoPlayer player = item.m_Instance.GetComponent<InfoPlayer>();
-                if (player != null && player.LocalPlayer()) {
+                if (player != null && player.LocalPlayer() && item.m_Instance.activeSelf) {
                     if (!player.team1 && team1Count < 3)
+                    {
                         player.CmdSetTeamBool(true);
+                        item.team1 = true;
+                    }
                     else if (player.team1 && team2Count < 3)
+                    {
                         player.CmdSetTeamBool(false);
+                        item.team1 = false;
+                    }
+                        
                     break;
                 }
             }

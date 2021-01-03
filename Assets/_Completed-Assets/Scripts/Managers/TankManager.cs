@@ -54,6 +54,13 @@ namespace Complete
                 m_ShootingLocal.m_PlayerNumber = m_PlayerNumber;
             }
 
+            InfoPlayer infoPlayer = m_Instance.GetComponent<InfoPlayer>();
+
+            if (infoPlayer)
+            {
+                m_PlayerColor = infoPlayer.team1 ? infoPlayer.colorTeam1 : infoPlayer.colorTeam2;
+            }
+            
             m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">";
             if (isTeamGame)
                 m_ColoredPlayerText += "TEAM " + (team1 ? "1" : "2");
