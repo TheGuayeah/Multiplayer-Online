@@ -27,8 +27,15 @@ namespace Complete
         [SyncVar(hook = nameof(HandleSteamIdUpdated))]
         private ulong steamId;
 
+        private GameManager gameManager;
+
         public void SetSteamId(ulong steamId_) {
             steamId = steamId_;
+        }
+
+        private void Start()
+        {
+            gameManager = FindObjectOfType<GameManager>();
         }
 
         private void HandleSteamIdUpdated(ulong oldSteamId, ulong newSteamId)
@@ -54,6 +61,27 @@ namespace Complete
             team1 = newTeam1;
             UpdateUIPos();
             ChangeColor();
+        }
+
+        [Command]
+        public void CmdStartGame(bool newBool)
+        {
+            if (gameManager.canvasTeams.activeSelf)
+            {
+                gameManager.canvasTeams.SetActive(false);
+            }
+            Debug.Log("CmdStartGame");
+            RpcStartGame(newBool);
+        }
+
+        [ClientRpc]
+        public void RpcStartGame(bool newBool)
+        {
+            if (gameManager.canvasTeams.activeSelf)
+            {
+                gameManager.canvasTeams.SetActive(false);
+            }
+            Debug.Log("RpcStartGame");
         }
 
         private void ChangeTeamBool(bool oldTeam1, bool newTeam1)

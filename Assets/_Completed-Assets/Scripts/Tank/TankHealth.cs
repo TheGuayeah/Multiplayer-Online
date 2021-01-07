@@ -34,6 +34,9 @@ namespace Complete
             }
 
             gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
+            if(GetComponent<InfoPlayer>()!= null)
+                gameManager.myPlayer = GetComponent<InfoPlayer>();
+
 
             // Instantiate the explosion prefab and get a reference to the particle system on it
             m_ExplosionParticles = Instantiate (m_ExplosionPrefab).GetComponent<ParticleSystem>();

@@ -27,17 +27,17 @@ namespace Complete {
 
         private void Start() {
             gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
-            if (isLocalPlayer)
+            //if (isLocalPlayer)
                 teamCanvas.SetActive(true);
             teamBtn.onClick.AddListener(ChangeTeam);
             team1Panel = GameObject.Find("Team1").transform;
             team2Panel = GameObject.Find("Team2").transform;
-
-            InvokeRepeating("UiSetup", 0f, 2f);
         }
 
         public void UiSetup()
         {
+            Debug.Log("UI Setup Init");
+
             UpdateTeamCount();
             int count = 0;
             foreach (var tank in gameManager.m_Tanks)
@@ -53,7 +53,7 @@ namespace Complete {
                         Transform parent = team1Panel.parent;
                         GameObject item = Instantiate(teamItemPrefab, parent);
                         item.name = tank.m_Movement.playerName;
-                        tank.m_Movement.enabled = false;
+                        //tank.m_Movement.enabled = false;
                         RectTransform rt = item.GetComponent<RectTransform>();
                         rt.localPosition = new Vector3(
                             player.team1 ? team1Panel.localPosition.x : team2Panel.localPosition.x,
@@ -61,12 +61,24 @@ namespace Complete {
                             0.0f);
                         player.myTeamItem = item;
                         player.myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
+                        Debug.Log("UI item.name " + item.name);
                     }
                     count++;
-                }
+                }                
             }
-            currentNumberPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
         }
+
+        [Command]
+        public void CmdUIServerSetup()
+        {
+            RpcUIClientsSetup();
+        } 
+
+        [ClientRpc]
+        public void RpcUIClientsSetup()
+        {
+            UiSetup();
+        } 
 
         public void ChangeTeam() {
             UpdateTeamCount();

@@ -22,21 +22,12 @@ namespace Complete
 
         void StartGameNetwork(bool oldStart, bool newStart)
         {
+            if (gameManager.canvasTeams.activeSelf)
+            {
+                gameManager.canvasTeams.SetActive(false);
+            }
+            Debug.Log("Hook");
             gameStart = newStart;
-        }
-
-        [Command]
-        public void CmdStartGame(bool newBool)
-        {
-            gameStart = newBool;
-            RpcStartGame(newBool);
-        }
-
-        [ClientRpc]
-        public void RpcStartGame(bool newBool)
-        {
-            gameStart = newBool;
-            StartGame();
         }
 
         public void StartGame()

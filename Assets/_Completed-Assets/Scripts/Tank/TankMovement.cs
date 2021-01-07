@@ -253,7 +253,8 @@ namespace Complete
                         if (Vector3.Distance(tank1, tank2) < 7)
                         {
                             gameManager.m_Tanks[x].Respawn();
-                            CheckTanksDistance();
+                            //TO DO
+                            //CheckTanksDistance();
                         }
                     }
                 }
