@@ -12,18 +12,17 @@ namespace Complete
         [SyncVar(hook = nameof(StartGameNetwork))]
         public bool gameStart;
 
+        [SerializeField]
         private GameManager gameManager;
 
         void Start()
         {
             playBtn.SetActive(isServer);
-            gameManager = GetComponent<GameManager>();
         }
 
         void StartGameNetwork(bool oldStart, bool newStart)
         {
             gameStart = newStart;
-            StartGame();
         }
 
         [Command]

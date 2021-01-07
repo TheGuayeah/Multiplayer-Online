@@ -70,13 +70,8 @@ namespace Complete
             
             SetCameraTargets();
 
-            initNumberPlayers = numberPlayers.currentNumberPlayers;
             Invoke("UpdateUI", 2f);
-        }
-
-        public void PlayGame()
-        {
-            FindObjectOfType<PlayNetworking>().GetComponent<PlayNetworking>().CmdStartGame(true);
+            initNumberPlayers = numberPlayers.currentNumberPlayers;
         }
 
         private void UpdateUI() {

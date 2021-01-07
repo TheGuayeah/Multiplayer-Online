@@ -33,16 +33,20 @@ namespace Complete {
             team1Panel = GameObject.Find("Team1").transform;
             team2Panel = GameObject.Find("Team2").transform;
 
-            InvokeRepeating("CheckNumberPlayers", 0f, 2f);
+            InvokeRepeating("UiSetup", 0f, 2f);
         }
 
-        public void UiSetup() {
+        public void UiSetup()
+        {
             UpdateTeamCount();
             int count = 0;
-            foreach (var tank in gameManager.m_Tanks) {
+            foreach (var tank in gameManager.m_Tanks)
+            {
                 InfoPlayer player = tank.m_Instance.GetComponent<InfoPlayer>();
-                if (player != null) {
-                    if (player.myTeamItem == null) {
+                if (player != null)
+                {
+                    if (player.myTeamItem == null)
+                    {
                         player.numberPlayers = this;
                         //if (player.LocalPlayer())
                         //player.SetTeamBool(team1Count <= team2Count);
@@ -61,12 +65,7 @@ namespace Complete {
                     count++;
                 }
             }
-        }
-
-        private void CheckNumberPlayers()
-        {
             currentNumberPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
-            UiSetup();
         }
 
         public void ChangeTeam() {
