@@ -13,6 +13,7 @@ namespace Complete
         public float m_ShootingDistance;
         public float m_TerrainXDistance;
         public float m_TerrainZDistance;
+        public bool gameStarted;
 
         private NavMeshAgent m_navAgent;
         private TankShooting m_tankShootingScript;
@@ -35,7 +36,7 @@ namespace Complete
 
         void Update()
         {
-            SetPlayerObjective();
+            if(gameStarted) SetPlayerObjective();
         }
 
         private void SetPlayerObjective()

@@ -32,10 +32,8 @@ namespace Complete {
             teamBtn.onClick.AddListener(ChangeTeam);
             team1Panel = GameObject.Find("Team1").transform;
             team2Panel = GameObject.Find("Team2").transform;
-        }
 
-        private void Update() {
-            currentNumberPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
+            InvokeRepeating("CheckNumberPlayers", 0f, 2f);
         }
 
         public void UiSetup() {
@@ -51,6 +49,7 @@ namespace Complete {
                         Transform parent = team1Panel.parent;
                         GameObject item = Instantiate(teamItemPrefab, parent);
                         item.name = tank.m_Movement.playerName;
+                        tank.m_Movement.enabled = false;
                         RectTransform rt = item.GetComponent<RectTransform>();
                         rt.localPosition = new Vector3(
                             player.team1 ? team1Panel.localPosition.x : team2Panel.localPosition.x,
@@ -62,6 +61,12 @@ namespace Complete {
                     count++;
                 }
             }
+        }
+
+        private void CheckNumberPlayers()
+        {
+            currentNumberPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
+            UiSetup();
         }
 
         public void ChangeTeam() {

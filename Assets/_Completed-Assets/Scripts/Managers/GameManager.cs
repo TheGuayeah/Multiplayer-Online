@@ -36,9 +36,6 @@ namespace Complete
             m_EndWait = new WaitForSeconds (m_EndDelay);
 
             Invoke("SetPlayersTanks", 1f);
-
-            // Once the tanks have been created and the camera is using them as targets, start the game
-            StartCoroutine (GameLoop ());
         }
 
         private void Update()
@@ -75,6 +72,11 @@ namespace Complete
 
             initNumberPlayers = numberPlayers.currentNumberPlayers;
             Invoke("UpdateUI", 2f);
+        }
+
+        public void PlayGame()
+        {
+            FindObjectOfType<PlayNetworking>().GetComponent<PlayNetworking>().CmdStartGame(true);
         }
 
         private void UpdateUI() {
@@ -163,7 +165,7 @@ namespace Complete
 
 
         // This is called from start and will run each phase of the game one after another
-        private IEnumerator GameLoop()
+        public IEnumerator GameLoop()
         {
             // Start off by running the 'RoundStarting' coroutine but don't return until it's finished
             yield return StartCoroutine (RoundStarting());
@@ -211,6 +213,12 @@ namespace Complete
         {
             // As soon as the round begins playing let the players control the tanks
             EnableTankControl();
+
+            GameObject[] tanksEnemiesInGame = GameObject.FindGameObjectsWithTag("Enemy");
+            foreach (var tank in tanksEnemiesInGame)
+            {
+                tank.GetComponent<NPC_AI_Script>().gameStarted = true;
+            }
 
             // Clear the text from the screen
             m_MessageText.text = string.Empty;
