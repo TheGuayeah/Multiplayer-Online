@@ -132,7 +132,14 @@ namespace Complete
 
             //m_Instance.SetActive (false);
             m_Instance.SetActive (true);
-            m_Instance.GetComponent<TankHealth>().ResetHealth();
+            try
+            {
+                m_Instance.GetComponent<TankHealth>().ResetHealth();
+            }
+            catch (Exception)
+            {
+                m_Instance.GetComponent<TankHealthLocal>().ResetHealth();
+            }
         }
 
         public void Respawn()

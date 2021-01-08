@@ -14,9 +14,11 @@ namespace Complete
         public float m_ExplosionRadius = 5f;                // The maximum distance away from the explosion tanks can be and are still affected
         public InfoPlayer myInfoPlayer;
 
+        private PlayNetworking playNetworking;
+
         private void Start ()
         {
-            GetComponent<Rigidbody>().velocity = transform.forward * 15;
+            GetComponent<Rigidbody>().velocity = transform.forward * 15;            playNetworking = FindObjectOfType<PlayNetworking>().GetComponent<PlayNetworking>();
             // If it isn't destroyed by then, destroy the shell after it's lifetime
             Destroy(gameObject, m_MaxLifeTime);
         }
@@ -52,7 +54,7 @@ namespace Complete
                     continue;
                 }
 
-                if (myInfoPlayer != null && targetInfo != null)
+                if (myInfoPlayer != null && targetInfo != null && playNetworking.activeTeams)
                 {
                     if (targetInfo.team1 != myInfoPlayer.team1)
                     {
