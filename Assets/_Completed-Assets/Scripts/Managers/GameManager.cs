@@ -30,7 +30,7 @@ namespace Complete
         
         private bool initGame = false;
         private int numberCurrentPlayers= 0;
-        
+
 
         private void Start()
         {
@@ -95,9 +95,24 @@ namespace Complete
 
                 SetCameraTargets();
 
-                if (playNetworking.gameStart) numberPlayersScript.HideUI();
+                if (playNetworking.gameStart) numberPlayersScript.ShowUI(false);
                 else Invoke("UpdateUI", 2f);
             }
+        }
+
+        void RestartGame() {
+            m_MessageText.gameObject.SetActive(false);
+
+            //m_CameraControl.m_Targets = new Transform[0];
+            if (GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<InfoPlayer>().LocalPlayer()) {
+                GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+                for (int i = 0; i < tanksInGame.Length; i++) {
+                    tanksInGame[i].SetActive(true);
+                    tanksInGame[i].GetComponent<TankMovement>().UpdateWins(0);
+                }
+            }
+
+            numberPlayersScript.ShowUI(true);
         }
 
         private void UpdateUI() {
@@ -220,7 +235,7 @@ namespace Complete
             if (m_GameWinner != null)
             {
                 // If there is a game winner, restart the level
-                SceneManager.LoadScene (0);
+                RestartGame();
             }
             else
             {
@@ -289,7 +304,7 @@ namespace Complete
 
                 if (m_RoundWinner.m_Instance.CompareTag("Enemy"))
                     m_RoundWinner.m_Movement.wins = wins+1;
-                else {//if (m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().LocalPlayer()) {
+                else if (GameObject.FindGameObjectsWithTag("Player")[0].GetComponent<InfoPlayer>().LocalPlayer()) {//if (m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().LocalPlayer()) {
                     if (playNetworking.activeTeams)
                         wins = GetTeamHighestWin(wins, m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().team1);
 
@@ -382,7 +397,7 @@ namespace Complete
                 }
                 else
                 {
-                    message = m_RoundWinner.m_playerName + " WINS THE ROUND!";
+                    message = GetPlayerColorText(m_RoundWinner) + " WINS THE ROUND!";
                 }
             }
                 
@@ -399,7 +414,7 @@ namespace Complete
                 }
                 else
                 {
-                    message += m_Tanks[i].m_playerName + ": " + m_Tanks[i].m_Wins + " WINS\n";
+                    message += GetPlayerColorText(m_Tanks[i]) + ": " + m_Tanks[i].m_Wins + " WINS\n";
                 }
             }
 
@@ -412,7 +427,7 @@ namespace Complete
                 }
                 else
                 {
-                    message = m_GameWinner.m_playerName + " WINS THE GAME!";
+                    message = GetPlayerColorText(m_GameWinner) + " WINS THE GAME!";
                 }
             }
 
@@ -454,7 +469,11 @@ namespace Complete
 
             // If there is a game winner, change the entire message to reflect that
             if (m_GameWinner != null) {
-                message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
+                if (m_GameWinner.m_Instance.CompareTag("Enemy")) {
+                    message = "NPC WINS THE GAME!";
+                } else {
+                    message = GetPlayerColorText(m_GameWinner) + " WINS THE GAME!";
+                }
             }
 
             return message;

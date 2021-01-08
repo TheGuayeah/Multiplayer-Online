@@ -14,7 +14,7 @@ namespace Complete
         public int playerColor;
         [SyncVar]
         public bool team1;
-        [SyncVar]
+        [SyncVar(hook = nameof(ChangeWins))]
         public int wins = 0;
 
         public int m_PlayerNumber = 1;              // Used to identify which tank belongs to which player.  This is set by this tank's manager
@@ -65,6 +65,7 @@ namespace Complete
         }
 
         public void UpdateWins(int newWins) {
+            wins = newWins;
             CmdUpdateWins(wins);
         }
 
@@ -76,6 +77,10 @@ namespace Complete
 
         [ClientRpc]
         public void RpcUpdateWins(int newWins) {
+            wins = newWins;
+        }
+
+        private void ChangeWins(int oldWins, int newWins) {
             wins = newWins;
         }
 

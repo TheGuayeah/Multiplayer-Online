@@ -65,9 +65,11 @@ namespace Complete {
             }
         }
 
-        public void HideUI()
+
+
+        public void ShowUI(bool show)
         {
-            teamCanvas.SetActive(false);
+            teamCanvas.SetActive(show);
         }
 
         [Command]
