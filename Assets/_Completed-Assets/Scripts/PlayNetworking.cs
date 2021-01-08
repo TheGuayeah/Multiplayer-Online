@@ -26,7 +26,6 @@ namespace Complete
             {
                 gameManager.canvasTeams.SetActive(false);
             }
-            Debug.Log("Hook");
             gameStart = newStart;
         }
 
@@ -38,8 +37,7 @@ namespace Complete
                 tank.GetComponent<TankMovement>().enabled = true;
                 tank.GetComponent<TankShooting>().enabled = true;
             }
-
-            StartCoroutine(gameManager.GameLoop());
+            tanksInGame[0].GetComponent<InfoPlayer>().RpcStartGame(true);
         }
     }
 }

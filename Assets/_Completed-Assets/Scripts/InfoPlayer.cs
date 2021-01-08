@@ -70,18 +70,14 @@ namespace Complete
             {
                 gameManager.canvasTeams.SetActive(false);
             }
-            Debug.Log("CmdStartGame");
             RpcStartGame(newBool);
         }
 
         [ClientRpc]
         public void RpcStartGame(bool newBool)
         {
-            if (gameManager.canvasTeams.activeSelf)
-            {
-                gameManager.canvasTeams.SetActive(false);
-            }
-            Debug.Log("RpcStartGame");
+            if (gameManager.canvasTeams.activeSelf) gameManager.canvasTeams.SetActive(false);
+            StartCoroutine(gameManager.GameLoop());
         }
 
         private void ChangeTeamBool(bool oldTeam1, bool newTeam1)

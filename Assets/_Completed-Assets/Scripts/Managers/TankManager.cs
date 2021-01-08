@@ -130,8 +130,8 @@ namespace Complete
 
             Respawn();
 
-            m_Instance.SetActive (false);
-            m_Instance.SetActive (true);
+            //m_Instance.SetActive (false);
+            //m_Instance.SetActive (true);
         }
 
         public void Respawn()

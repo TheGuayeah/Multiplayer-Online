@@ -44,8 +44,6 @@ namespace Complete
         {
             int numberPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
 
-            Debug.Log("SetPlayers");
-
             if(numberPlayers == 4)
             {
                 CancelInvoke(nameof(SetPlayersTanks));
@@ -76,7 +74,6 @@ namespace Complete
 
                 SetCameraTargets();
 
-                Debug.Log("Set Tanks");
                 Invoke("UpdateUI", 2f);
             }
         }
@@ -198,14 +195,12 @@ namespace Complete
             // As soon as the round starts reset the tanks and make sure they can't move
             ResetAllTanks();
             DisableTankControl();
-
             // Snap the camera's zoom and position to something appropriate for the reset tanks
             m_CameraControl.SetStartPositionAndSize();
 
             // Increment the round number and display text showing the players what round it is
             m_RoundNumber++;
             m_MessageText.text = "ROUND " + m_RoundNumber;
-
             // Wait for the specified length of time until yielding control back to the game loop
             yield return m_StartWait;
         }
