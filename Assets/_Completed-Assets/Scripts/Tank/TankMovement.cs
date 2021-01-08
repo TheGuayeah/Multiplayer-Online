@@ -64,7 +64,8 @@ namespace Complete
             ChangeTankAndNameColor();
         }
 
-        public void UpdateWins(int wins) {
+        public void UpdateWins(int newWins) {
+            wins = newWins;
             CmdUpdateWins(wins);
         }
 

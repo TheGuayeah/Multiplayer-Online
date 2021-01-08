@@ -289,7 +289,7 @@ namespace Complete
 
                 if (m_RoundWinner.m_Instance.CompareTag("Enemy"))
                     m_RoundWinner.m_Movement.wins = wins+1;
-                else if (m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().LocalPlayer()) {
+                else {//if (m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().LocalPlayer()) {
                     if (playNetworking.activeTeams)
                         wins = GetTeamHighestWin(wins, m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().team1);
 
@@ -425,7 +425,7 @@ namespace Complete
 
             // If there is a winner then change the message to reflect that
             if (m_RoundWinner != null) {
-                message = m_RoundWinner.m_ColoredPlayerText + " WINS THE ROUND!";
+                message = GetPlayerColorText(m_RoundWinner) + " WINS THE ROUND!";
             }
 
             // Add some line breaks after the initial message
@@ -434,14 +434,14 @@ namespace Complete
 
             for (int i = 0; i < m_Tanks.Length; i++) {
                 if (!m_Tanks[i].m_Instance.CompareTag("Enemy") && m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1) {
-                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Movement.wins + " WINS\n";
+                    message += GetPlayerColorText(m_Tanks[i]) + ": " + GetTeamHighestWin(0, true) + " WINS\n";
                     break;
                 }
             }
 
             for (int i = 0; i < m_Tanks.Length; i++) {
                 if (!m_Tanks[i].m_Instance.CompareTag("Enemy") && !m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1) {
-                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Movement.wins + " WINS\n";
+                    message += GetPlayerColorText(m_Tanks[i]) + ": " + GetTeamHighestWin(0, false) + " WINS\n";
                     break;
                 }
             }
@@ -449,7 +449,6 @@ namespace Complete
             for (int i = 0; i < m_Tanks.Length; i++) {
                 if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>() == null) {
                     message += "NPC " + i + ": " + m_Tanks[i].m_Wins + " WINS\n";
-                    break;
                 }
             }
 
@@ -459,6 +458,17 @@ namespace Complete
             }
 
             return message;
+        }
+
+        string GetPlayerColorText(TankManager player) {
+            string coloredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(player.m_Instance.GetComponent<InfoPlayer>().myColor) + ">";
+            if (playNetworking.activeTeams)
+                coloredPlayerText += "TEAM " + (player.m_Instance.GetComponent<InfoPlayer>().team1 ? "1" : "2");
+            else
+                coloredPlayerText += player.m_Movement.playerName;
+            coloredPlayerText += " </color>";
+
+            return coloredPlayerText;
         }
 
 

@@ -17,6 +17,8 @@ namespace Complete
         public Transform m_SpawnPoint;                          // The position and direction the tank will have when it spawns
         public int m_PlayerNumber;            // This specifies which player this the manager for
         [HideInInspector] public string m_ColoredPlayerText;    // A string that represents the player with their number colored to match their tank
+
+
         public GameObject m_Instance;         // A reference to the instance of the tank when it is created
         public int m_Wins;                    // The number of wins this player has so far
         public bool isTeamGame;
@@ -65,7 +67,7 @@ namespace Complete
             if (isTeamGame)
                 m_ColoredPlayerText += "TEAM " + (team1 ? "1" : "2");
             else
-                m_ColoredPlayerText += "PLAYER " + m_Movement.playerName;
+                m_ColoredPlayerText += "PLAYER " + m_PlayerNumber;
             m_ColoredPlayerText += " </color>";
 
             if(m_Movement)
