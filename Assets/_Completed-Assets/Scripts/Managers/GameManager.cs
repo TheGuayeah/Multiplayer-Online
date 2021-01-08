@@ -10,21 +10,22 @@ namespace Complete
     public class GameManager : MonoBehaviour
     {
         public int m_NumRoundsToWin = 5;            // The number of rounds a single player has to win to win the game
-        public float m_StartDelay = 3f;             // The delay between the start of RoundStarting and RoundPlaying phases
+        public float m_StartDelay = 1.5f;             // The delay between the start of RoundStarting and RoundPlaying phases
         public float m_EndDelay = 3f;               // The delay between the end of RoundPlaying and RoundEnding phases
         public CameraControl m_CameraControl;       // Reference to the CameraControl script for control during different phases
         public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc
         public GameObject m_TankPrefab;             // Reference to the prefab the players will control
         public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks
-        public NumberPlayers numberPlayers;
+        public NumberPlayers numberPlayersScript;
         public GameObject canvasTeams;
-        public InfoPlayer myPlayer;
+        public PlayNetworking playNetworking;
 
         private int m_RoundNumber;                  // Which round the game is currently on
         private WaitForSeconds m_StartWait;         // Used to have a delay whilst the round starts
         private WaitForSeconds m_EndWait;           // Used to have a delay whilst the round or game ends
         private TankManager m_RoundWinner;          // Reference to the winner of the current round.  Used to make an announcement of who won
         private TankManager m_GameWinner;           // Reference to the winner of the game.  Used to make an announcement of who won
+        private bool localTankInit;
         
         
         private bool initGame= false;
@@ -54,6 +55,26 @@ namespace Complete
                 numberCurrentPlayers = numberPlayers;
 
                 GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+                int team1 = 0;
+                if (!localTankInit)
+                {
+                    foreach (var tank in tanksInGame)
+                    {
+                        var playerInfo = tank.GetComponent<InfoPlayer>();
+                        if (playerInfo.LocalPlayer())
+                        {
+                            if (team1 >= 2) playerInfo.team1 = false;
+                            playerInfo.CmdSetTeamBool(playerInfo.team1);
+                            if (playNetworking.gameStart) playerInfo.StartGameClient(true);
+                            break;
+                        }
+                        else if (playerInfo.team1)
+                        {
+                            team1++;
+                        }
+                    }
+                    localTankInit = true;
+                }
 
                 //Al comienzo de iniciar la partida el jugador, añade todos los tanques Player al array.
                 if (!initGame)
@@ -74,12 +95,34 @@ namespace Complete
 
                 SetCameraTargets();
 
-                Invoke("UpdateUI", 2f);
+                if (playNetworking.gameStart) numberPlayersScript.HideUI();
+                else Invoke("UpdateUI", 2f);
             }
         }
 
         private void UpdateUI() {
-            numberPlayers.UiSetup();
+            numberPlayersScript.UiSetup();
+        }
+
+        private bool OneTeamLeft()
+        {
+            // Start the count of tanks left at zero
+            int team1TanksLeft = 0;
+            int team2TanksLeft = 0;
+
+            // Go through all the tanks...
+            for (int i = 0; i < m_Tanks.Length; i++)
+            {
+                // ... and if they are active, increment the counter
+                if (m_Tanks[i].m_Instance.activeSelf && m_Tanks[i].m_Instance.GetComponent<InfoPlayer>() != null)
+                {
+                    if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1)
+                        team1TanksLeft++;
+                    else
+                        team2TanksLeft++;
+                }
+            }
+            return team1TanksLeft == 0 || team2TanksLeft == 0;
         }
 
         private void AddToTankList(GameObject gameObj)
@@ -152,7 +195,7 @@ namespace Complete
 
             // Once the 'RoundStarting' coroutine is finished, run the 'RoundPlaying' coroutine but don't return until it's finished
             yield return StartCoroutine (RoundPlaying());
-
+            Debug.Log("GameLoop end playing");
             // Once execution has returned here, run the 'RoundEnding' coroutine, again don't return until it's finished
             yield return StartCoroutine (RoundEnding());
 
@@ -202,16 +245,18 @@ namespace Complete
             m_MessageText.text = string.Empty;
 
             // While there is not one tank left...
-            while (!OneTankLeft())
+            while ((!playNetworking.activeTeams && !OneTankLeft()) || (playNetworking.activeTeams && !OneTeamLeft()))
             {
                 // ... return on the next frame
                 yield return null;
             }
+            Debug.Log("end playing");
         }
 
 
         private IEnumerator RoundEnding()
         {
+            Debug.Log("Round ending");
             // Stop tanks from moving
             DisableTankControl();
 

@@ -8,6 +8,7 @@ namespace Complete
     public class PlayNetworking : NetworkBehaviour
     {
         public GameObject playBtn;
+        public bool activeTeams = true;
 
         [SyncVar(hook = nameof(StartGameNetwork))]
         public bool gameStart;
@@ -31,6 +32,7 @@ namespace Complete
 
         public void StartGame()
         {
+            gameStart = true;
             GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
             foreach (var tank in tanksInGame)
             {

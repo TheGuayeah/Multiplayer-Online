@@ -80,6 +80,12 @@ namespace Complete
             StartCoroutine(gameManager.GameLoop());
         }
 
+        public void StartGameClient(bool newBool)
+        {
+            if (gameManager.canvasTeams.activeSelf) gameManager.canvasTeams.SetActive(false);
+            StartCoroutine(gameManager.GameLoop());
+        }
+
         private void ChangeTeamBool(bool oldTeam1, bool newTeam1)
         {
             team1 = newTeam1;

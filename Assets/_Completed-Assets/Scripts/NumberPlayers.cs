@@ -36,8 +36,6 @@ namespace Complete {
 
         public void UiSetup()
         {
-            Debug.Log("UI Setup Init");
-
             UpdateTeamCount();
             int count = 0;
             foreach (var tank in gameManager.m_Tanks)
@@ -61,12 +59,15 @@ namespace Complete {
                             0.0f);
                         player.myTeamItem = item;
                         player.myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
-                        player.CmdSetTeamBool(true);
-                        Debug.Log("UI item.name " + item.name);
                     }
                     count++;
                 }                
             }
+        }
+
+        public void HideUI()
+        {
+            teamCanvas.SetActive(false);
         }
 
         [Command]
