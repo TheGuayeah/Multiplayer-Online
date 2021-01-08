@@ -315,6 +315,8 @@ namespace Complete
             // Now the winner's score has been incremented, see if someone has one the game
             m_GameWinner = GetGameWinner(m_RoundWinner);
 
+
+            yield return new WaitForSeconds(1f);
             // Get a message based on the scores and whether or not there is a game winner and display it
             string message = playNetworking.activeTeams ? EndMessageTeams() : EndMessage();
             m_MessageText.text = message;
