@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Linq;
 
 namespace Complete
 {
@@ -8,53 +7,57 @@ namespace Complete
         public float m_DampTime = 0.2f;                 // Approximate time for the camera to refocus
         public float m_ScreenEdgeBuffer = 4f;           // Space between the top/bottom most target and the screen edge
         public float m_MinSize = 6.5f;                  // The smallest orthographic size the camera can be
-        //[HideInInspector]
-        public Transform[] m_Targets; // All the targets the camera needs to encompass
-        public GameObject[] arrayTanks;
+        [HideInInspector] public Transform[] m_Targets; // All the targets the camera needs to encompass
 
 
-        private Camera m_Camera;                        // Used for referencing the camera
+        private Camera m_Camera;                        // Camera reference
         private float m_ZoomSpeed;                      // Reference speed for the smooth damping of the orthographic size
         private Vector3 m_MoveVelocity;                 // Reference velocity for the smooth damping of the position
         private Vector3 m_DesiredPosition;              // The position the camera is moving towards
 
+		private bool splitMode = true;                  // Split-screen enabled
+		public float limitDist = 25.0f;                 // Distance limit
+		public float hysteresis = 5.0f;                 // Hysteresis
 
-        private void Awake()
-        {
-            m_Camera = GetComponentInChildren<Camera> ();
+
+        private void Awake()  {
+
+			splitMode = false;                              // Split mode disabled by default
+            m_Camera = GetComponentInChildren<Camera>();
         }
 
 
-        private void FixedUpdate()
-        {
-            //Ajustar la cámara acorde al número de tanques en el juego
-            SetCameraTargets();
+        private void FixedUpdate() {
+            Move();                                         // Move the camera towards the desired position
 
-            // Move the camera towards a desired position
-            Move();
-
-            // Change the size of the camera based
-            Zoom();
-        }
-
-        private void SetCameraTargets()
-        {
-            arrayTanks = GameObject.FindGameObjectsWithTag("Player").Concat(GameObject.FindGameObjectsWithTag("Enemy")).ToArray();
-
-            // Create a collection of transforms the same size as the number of tanks
-            Transform[] targets = new Transform[arrayTanks.Length];
-
-            // For each of these transforms...
-            for (int i = 0; i < targets.Length; i++)
+            if (!splitMode)                                 // Change camera size
             {
-                // ... set it to the appropriate tank transform
-                targets[i] = arrayTanks[i].GetComponent<Transform>();
+                Zoom();
             }
 
-            // These are the targets the camera should follow
-            m_Targets = targets;
+			//Split();
         }
 
+		private void Split() {
+            float distance = 0;
+
+            if (m_Targets.Length != 0) distance = Vector3.Distance(m_Targets[0].position, m_Targets[1].position);
+
+            if (splitMode && distance < limitDist - hysteresis) {
+				Debug.Log ("Disable SplitScreen");
+				splitMode = false;
+
+				m_Camera.enabled = true;
+				m_Camera.gameObject.SetActive (true);
+			} 
+			else if (!splitMode && distance > limitDist + hysteresis) {
+				Debug.Log ("Enable SplitScreen");
+				splitMode = true;
+
+				m_Camera.enabled = false;
+				m_Camera.gameObject.SetActive(false);
+			}
+		}
 
         private void Move()
         {
@@ -62,9 +65,8 @@ namespace Complete
             FindAveragePosition();
 
             // Smoothly transition to that position
-            transform.position = Vector3.SmoothDamp (transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);
+            transform.position = Vector3.SmoothDamp (transform.position, m_DesiredPosition, ref m_MoveVelocity, m_DampTime);        
         }
-
 
         private void FindAveragePosition()
         {
@@ -118,7 +120,7 @@ namespace Complete
             // Go through all the targets...
             for (int i = 0; i < m_Targets.Length; i++)
             {
-                // ... and if they aren't active continue on to the next target
+                // ... and if they aren't active continue on to the next target.
                 if (!m_Targets[i].gameObject.activeSelf)
                 {
                     continue;
@@ -131,7 +133,7 @@ namespace Complete
                 Vector3 desiredPosToTarget = targetLocalPos - desiredLocalPos;
 
                 // Choose the largest out of the current size and the distance of the tank 'up' or 'down' from the camera
-                size = Mathf.Max(size, Mathf.Abs (desiredPosToTarget.y));
+                size = Mathf.Max (size, Mathf.Abs (desiredPosToTarget.y));
 
                 // Choose the largest out of the current size and the calculated size based on the tank being to the left or right of the camera
                 size = Mathf.Max(size, Mathf.Abs (desiredPosToTarget.x) / m_Camera.aspect);
@@ -147,16 +149,16 @@ namespace Complete
         }
 
 
-        public void SetStartPositionAndSize()
+        public void SetStartPositionAndSize ()
         {
             // Find the desired position
-            FindAveragePosition ();
+            FindAveragePosition();
 
             // Set the camera's position to the desired position without damping
             transform.position = m_DesiredPosition;
 
             // Find and set the required size of the camera
-            m_Camera.orthographicSize = FindRequiredSize();
+            m_Camera.orthographicSize = FindRequiredSize ();
         }
     }
 }

@@ -12,6 +12,10 @@ namespace Complete
         public string playerName;
         [SyncVar]
         public int playerColor;
+        [SyncVar]
+        public bool team1;
+        [SyncVar(hook = nameof(ChangeWins))]
+        public int wins = 0;
 
         public int m_PlayerNumber = 1;              // Used to identify which tank belongs to which player.  This is set by this tank's manager
         public float m_Speed = 12f;                 // How fast the tank moves forward and back
@@ -34,11 +38,14 @@ namespace Complete
         private InputAction m_MoveAction;           // Move Action reference (Unity 2020 New Input System)
         private InputAction m_TurnAction;           // Turn Action reference (Unity 2020 New Input System)
         private bool isDisabled = false;            // To avoid enabling / disabling Input System when tank is destroyed
+        private GameManager gameManager;
 
 
         private void Awake()
         {
             m_Rigidbody = GetComponent<Rigidbody>();
+            gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
+            CheckTanksDistance();
         }
 
         [Command]
@@ -56,7 +63,27 @@ namespace Complete
 
             ChangeTankAndNameColor();
         }
-        
+
+        public void UpdateWins(int newWins) {
+            wins = newWins;
+            CmdUpdateWins(wins);
+        }
+
+        [Command]
+        public void CmdUpdateWins(int newWins) {
+            wins = newWins;
+            RpcUpdateWins(newWins);
+        }
+
+        [ClientRpc]
+        public void RpcUpdateWins(int newWins) {
+            wins = newWins;
+        }
+
+        private void ChangeWins(int oldWins, int newWins) {
+            wins = newWins;
+        }
+
         private void OnEnable()
         {
             // When the tank is turned on, make sure it's not kinematic
@@ -139,17 +166,7 @@ namespace Complete
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.G)) {
-                ChangeColor();
-            }
-
             EngineAudio();
-        }
-
-        public void ChangeColor() {
-            playerColor = (playerColor + 1) % LobbyMenu.tankColors.Length;
-            CmdSendNameAndColorToServer(playerName, playerColor);
-            ChangeTankAndNameColor();
         }
 
         private void ChangeTankAndNameColor() {
@@ -242,6 +259,29 @@ namespace Complete
 
                 // Apply this rotation to the rigidbody's rotation
                 m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+            }
+        }
+
+        public void CheckTanksDistance()
+        {
+            if(gameManager.m_Tanks.Length > 1)
+            {
+                for (int x = 0; x < gameManager.m_Tanks.Length; x++)
+                {
+                    for (int y = x + 1; y < gameManager.m_Tanks.Length; y++)
+                    {
+                        Vector3 tank1 = gameManager.m_Tanks[x].m_Instance.transform.position;
+                        Vector3 tank2 = gameManager.m_Tanks[y].m_Instance.transform.position;
+
+
+                        if (Vector3.Distance(tank1, tank2) < 7)
+                        {
+                            gameManager.m_Tanks[x].Respawn();
+                            //TO DO
+                            //CheckTanksDistance();
+                        }
+                    }
+                }
             }
         }
     }

@@ -30,8 +30,6 @@ public class LobbyMenu : MonoBehaviour {
     public GameObject serverUISpawner;
     public GameObject serverUIRow;
 
-    public Image colorButton;
-
     public static string[] tankColors = { "red", "black", "white", "blue", "green", "yellow" };
     int currentColorIdx;
 
@@ -42,14 +40,12 @@ public class LobbyMenu : MonoBehaviour {
         currentColorIdx = Random.Range(0, tankColors.Length - 1);
         Color tmpColor;
         ColorUtility.TryParseHtmlString(tankColors[currentColorIdx], out tmpColor);
-        colorButton.color = tmpColor;
     }
 
     public void ChangeColor() {
         currentColorIdx = (currentColorIdx + 1) % tankColors.Length;
         Color tmpColor;
         ColorUtility.TryParseHtmlString(tankColors[currentColorIdx], out tmpColor);
-        colorButton.color = tmpColor;
     }
 
     public void CreateGame() {

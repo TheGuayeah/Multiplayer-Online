@@ -1,8 +1,9 @@
 using UnityEngine;
+using Mirror;
 
 namespace Complete
 {
-    public class ShellExplosion : MonoBehaviour
+    public class ShellExplosion : NetworkBehaviour
     {
         public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players"
         public ParticleSystem m_ExplosionParticles;         // Reference to the particles that will play on explosion
@@ -11,11 +12,13 @@ namespace Complete
         public float m_ExplosionForce = 1000f;              // The amount of force added to a tank at the centre of the explosion
         public float m_MaxLifeTime = 2f;                    // The time in seconds before the shell is removed
         public float m_ExplosionRadius = 5f;                // The maximum distance away from the explosion tanks can be and are still affected
+        public InfoPlayer myInfoPlayer;
 
+        private PlayNetworking playNetworking;
 
         private void Start ()
         {
-            GetComponent<Rigidbody>().velocity = transform.forward * 15;
+            GetComponent<Rigidbody>().velocity = transform.forward * 15;            playNetworking = FindObjectOfType<PlayNetworking>().GetComponent<PlayNetworking>();
             // If it isn't destroyed by then, destroy the shell after it's lifetime
             Destroy(gameObject, m_MaxLifeTime);
         }
@@ -42,7 +45,8 @@ namespace Complete
                 targetRigidbody.AddExplosionForce (m_ExplosionForce, transform.position, m_ExplosionRadius);
 
                 // Find the TankHealth script associated with the rigidbody
-                TankHealth targetHealth = targetRigidbody.GetComponent<TankHealth>();
+                InfoPlayer targetInfo = targetRigidbody.GetComponent<InfoPlayer>();
+                TankHealth targetHealth= targetRigidbody.GetComponent<TankHealth>();
 
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider
                 if (!targetHealth)
@@ -50,11 +54,17 @@ namespace Complete
                     continue;
                 }
 
-                // Calculate the amount of damage the target should take based on it's distance from the shell
-                float damage = CalculateDamage (targetRigidbody.position);
-
-                // Deal this damage to the tank
-                targetHealth.TakeDamage (damage);
+                if (myInfoPlayer != null && targetInfo != null && playNetworking.activeTeams)
+                {
+                    if (targetInfo.team1 != myInfoPlayer.team1)
+                    {
+                        DamageEnemy(targetRigidbody, targetHealth);
+                    }
+                }
+                else
+                {
+                    DamageEnemy(targetRigidbody, targetHealth);
+                }
             }
 
             // Unparent the particles from the shell
@@ -74,6 +84,14 @@ namespace Complete
             Destroy (gameObject);
         }
 
+        private void DamageEnemy(Rigidbody targetRigidbody, TankHealth targetHealth)
+        {
+            // Calculate the amount of damage the target should take based on it's distance from the shell
+            float damage = CalculateDamage(targetRigidbody.position);
+
+            // Deal this damage to the tank
+            targetHealth.TakeDamage(damage);
+        }
 
         private float CalculateDamage (Vector3 targetPosition)
         {

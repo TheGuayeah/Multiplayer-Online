@@ -35,6 +35,7 @@ namespace Complete
 
             gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
 
+
             // Instantiate the explosion prefab and get a reference to the particle system on it
             m_ExplosionParticles = Instantiate (m_ExplosionPrefab).GetComponent<ParticleSystem>();
 
@@ -63,6 +64,11 @@ namespace Complete
         }
 
         private void OnEnable()
+        {
+            ResetHealth();
+        }
+
+        public void ResetHealth()
         {
             // When the tank is enabled, reset the tank's health and whether or not it's dead
             m_CurrentHealth = m_StartingHealth;

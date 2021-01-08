@@ -1,0 +1,102 @@
+{
+    "name": "EnterPlayers",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "9d6c7dc0-5d18-42db-8f18-d4e5dcbc9875",
+            "actions": [
+                {
+                    "name": "P1",
+                    "type": "Button",
+                    "id": "35dc2563-00d1-4c64-8d52-7c3587f8ab9f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "P2",
+                    "type": "Button",
+                    "id": "dfa3900b-bc96-47cb-ad82-cdb3bff7f052",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "P3",
+                    "type": "Button",
+                    "id": "b8204696-f270-46f0-9ff0-13c1d836edf7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "P4",
+                    "type": "Button",
+                    "id": "0d9567a3-8fd6-4c4e-8d7a-35a54e71f501",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fe480e54-0034-42ec-9bb0-1bdf0e2d7852",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "P1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "64650eec-c6c8-4850-b483-5a2675798063",
+                    "path": "<Keyboard>/rightShift",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "P2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "de994961-398c-4a0e-a791-63f07a9b9c3c",
+                    "path": "<Keyboard>/y",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "P3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "54b5e18f-15b2-4618-8551-e3a3138b361b",
+                    "path": "<Keyboard>/o",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "P4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

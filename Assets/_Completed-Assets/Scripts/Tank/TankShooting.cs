@@ -91,6 +91,8 @@ namespace Complete
                 m_FireTransform.rotation
             );
 
+            bullet.GetComponent<ShellExplosion>().myInfoPlayer = GetComponent<InfoPlayer>();
+
             NetworkServer.Spawn(bullet);
 
             // Set the shell's velocity to the launch force in the fire position's forward direction

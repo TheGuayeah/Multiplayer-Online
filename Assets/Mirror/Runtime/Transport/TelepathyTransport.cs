@@ -51,8 +51,6 @@ namespace Mirror
             client.MaxMessageSize = clientMaxMessageSize;
             server.NoDelay = NoDelay;
             server.MaxMessageSize = serverMaxMessageSize;
-
-            Debug.Log("TelepathyTransport initialized!");
         }
 
         public override bool Available()
@@ -227,7 +225,6 @@ namespace Mirror
         // common
         public override void Shutdown()
         {
-            Debug.Log("TelepathyTransport Shutdown()");
             client.Disconnect();
             server.Stop();
         }

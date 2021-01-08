@@ -79,7 +79,6 @@ namespace Telepathy
                 listener.Server.NoDelay = NoDelay;
                 listener.Server.SendTimeout = SendTimeout;
                 listener.Start();
-                Logger.Log("Server: listening port=" + port);
 
                 // keep accepting new clients
                 while (true)
@@ -160,18 +159,18 @@ namespace Telepathy
             {
                 // UnityEditor causes AbortException if thread is still
                 // running when we press Play again next time. that's okay.
-                Logger.Log("Server thread aborted. That's okay. " + exception);
+                //Logger.Log("Server thread aborted. That's okay. " + exception);
             }
             catch (SocketException exception)
             {
                 // calling StopServer will interrupt this thread with a
                 // 'SocketException: interrupted'. that's okay.
-                Logger.Log("Server Thread stopped. That's okay. " + exception);
+                //Logger.Log("Server Thread stopped. That's okay. " + exception);
             }
             catch (Exception exception)
             {
                 // something went wrong. probably important.
-                Logger.LogError("Server Exception: " + exception);
+                //Logger.LogError("Server Exception: " + exception);
             }
         }
 
@@ -192,7 +191,6 @@ namespace Telepathy
             // start the listener thread
             // (on low priority. if main thread is too busy then there is not
             //  much value in accepting even more clients)
-            Logger.Log("Server: Start port=" + port);
             listenerThread = new Thread(() => { Listen(port); });
             listenerThread.IsBackground = true;
             listenerThread.Priority = ThreadPriority.BelowNormal;
@@ -206,7 +204,6 @@ namespace Telepathy
             if (!Active)
                 return;
 
-            Logger.Log("Server: stopping...");
 
             // stop listening to connections so that no one can connect while we
             // close the client connections
