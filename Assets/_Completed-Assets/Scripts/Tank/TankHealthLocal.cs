@@ -35,6 +35,11 @@ namespace Complete
 
         private void OnEnable()
         {
+            ResetHealth();
+        }
+
+        public void ResetHealth()
+        {
             // When the tank is enabled, reset the tank's health and whether or not it's dead
             m_CurrentHealth = m_StartingHealth;
             m_Dead = false;
@@ -42,7 +47,6 @@ namespace Complete
             // Update the health slider's value and color
             SetHealthUI();
         }
-
 
         public void TakeDamage (float amount)
         {

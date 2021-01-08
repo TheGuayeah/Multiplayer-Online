@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Complete
 {
@@ -9,6 +11,11 @@ namespace Complete
     {
         public GameObject playBtn;
         public GameObject teamsCanvas;
+        public Toggle activateTeamsToggle;
+        public GameObject teamsList;
+        public TextMeshProUGUI waitingTxt;
+
+        [SyncVar(hook = nameof(ActivateTeamsNetwork))]
         public bool activeTeams = true;
 
         [SyncVar(hook = nameof(StartGameNetwork))]
@@ -23,6 +30,7 @@ namespace Complete
         void Start()
         {
             playBtn.SetActive(isServer);
+            activateTeamsToggle.gameObject.SetActive(isServer);
         }
 
         void StartGameNetwork(bool oldStart, bool newStart)
@@ -32,6 +40,39 @@ namespace Complete
                 gameManager.canvasTeams.SetActive(false);
             }
             gameStart = newStart;
+        }
+
+        void ActivateTeamsNetwork(bool oldActive, bool newActive)
+        {
+            activeTeams = newActive;
+
+            if (!newActive)
+            {
+                GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+                foreach (var tank in tanksInGame)
+                {
+                    tank.GetComponent<InfoPlayer>().ChangeDeathMatchColor();
+                }
+            }
+            else
+            {
+                GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+                foreach (var tank in tanksInGame)
+                {
+                    tank.GetComponent<InfoPlayer>().ChangeColor();
+                }
+            }
+
+            if (!newActive && !isServer)
+            {
+                waitingTxt.gameObject.SetActive(true);
+                teamsList.SetActive(false);
+            }
+            else
+            {
+                waitingTxt.gameObject.SetActive(false);
+                teamsList.SetActive(true);
+            }
         }
 
         public void StartGame()
@@ -71,6 +112,11 @@ namespace Complete
             }
             team1Players = team1TanksLeft;
             team2Players = team2TanksLeft;
+        }
+
+        public void toggleActivateOnChange(bool activate)
+        {
+            activeTeams = activate;
         }
     }
 }

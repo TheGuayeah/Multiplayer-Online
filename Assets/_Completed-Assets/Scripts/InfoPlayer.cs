@@ -91,12 +91,28 @@ namespace Complete
             team1 = newTeam1;
         }
 
-        private void ChangeColor()
+        public void ChangeColor()
         {
             // Get all of the renderers of the tank
             MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
 
             myColor = team1 ? colorTeam1 : colorTeam2;
+
+            // Go through all the renderers...
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                // ... set their material color to the color specific to this tank
+                renderers[i].material.color = myColor;
+                playerText.color = myColor;
+            }
+        }
+
+        public void ChangeDeathMatchColor()
+        {
+            // Get all of the renderers of the tank
+            MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
+
+            myColor = Color.cyan;
 
             // Go through all the renderers...
             for (int i = 0; i < renderers.Length; i++)
