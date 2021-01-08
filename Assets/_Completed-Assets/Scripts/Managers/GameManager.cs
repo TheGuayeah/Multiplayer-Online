@@ -104,25 +104,6 @@ namespace Complete
             //gameManager.SetCameraTargets();
         }
 
-        /*private void CheckTanksDistance()
-        {
-            for (int x = 0; x < m_Tanks.Length; x++)
-            {
-                for (int y = x+1; y < m_Tanks.Length; y++)
-                {
-                    Vector3 tank1 = m_Tanks[x].m_Instance.transform.position;
-                    Vector3 tank2 = m_Tanks[y].m_Instance.transform.position;
-
-
-                    if (Vector3.Distance(tank1, tank2) < 7)
-                    {
-                        m_Tanks[x].Respawn();
-                        CheckTanksDistance();
-                    }
-                }
-            }
-        }*/
-
         public void RemoveFromTankList(TankManager tankObj)
         {
             // Eliminamos el tanque completamente configurado a la lista del GameManager
@@ -373,6 +354,7 @@ namespace Complete
             for (int i = 0; i < m_Tanks.Length; i++)
             {
                 m_Tanks[i].Reset();
+                m_Tanks[i].m_Instance.GetComponent<TankMovement>().CheckTanksDistance();
             }
         }
 

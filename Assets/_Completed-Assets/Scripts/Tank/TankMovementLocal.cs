@@ -19,12 +19,13 @@ namespace Complete
         private float m_MovementInputValue;         // The current value of the movement input
         private float m_TurnInputValue;             // The current value of the turn input
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene
-        private GameManager m_GameManager;
+        private GameManagerLocal m_GameManager;
 
 
         private void Awake()
         {
             m_Rigidbody = GetComponent<Rigidbody>();
+            m_GameManager = FindObjectOfType<GameManagerLocal>().GetComponent<GameManagerLocal>();
         }
 
 
@@ -54,8 +55,6 @@ namespace Complete
 
             // Store the original pitch of the audio source
             m_OriginalPitch = m_MovementAudio.pitch;
-
-            m_GameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
         }
 
 
@@ -137,6 +136,28 @@ namespace Complete
 
             // Apply this rotation to the rigidbody's rotation
             m_Rigidbody.MoveRotation (m_Rigidbody.rotation * turnRotation);
+        }
+
+        public void CheckTanksDistance()
+        {
+            if (m_GameManager.m_Tanks.Length > 1)
+            {
+                for (int x = 0; x < m_GameManager.m_Tanks.Length; x++)
+                {
+                    for (int y = x + 1; y < m_GameManager.m_Tanks.Length; y++)
+                    {
+                        Vector3 tank1 = m_GameManager.m_Tanks[x].m_Instance.transform.position;
+                        Vector3 tank2 = m_GameManager.m_Tanks[y].m_Instance.transform.position;
+
+
+                        if (Vector3.Distance(tank1, tank2) < 7)
+                        {
+                            m_GameManager.m_Tanks[x].Respawn();
+                            CheckTanksDistance();
+                        }
+                    }
+                }
+            }
         }
     }
 }
