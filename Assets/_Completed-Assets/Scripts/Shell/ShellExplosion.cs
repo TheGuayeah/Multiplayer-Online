@@ -52,12 +52,10 @@ namespace Complete
                     continue;
                 }
 
-                if (myInfoPlayer != null)
+                if (myInfoPlayer != null && targetInfo != null)
                 {
-                    if (targetInfo.team1 != myInfoPlayer.team1 && targetInfo != null)
+                    if (targetInfo.team1 != myInfoPlayer.team1)
                     {
-                        Debug.Log("Myteam: "+ myInfoPlayer.team1);
-                        Debug.Log("TargetTeam: "+targetInfo.team1);
                         DamageEnemy(targetRigidbody, targetHealth);
                     }
                 }

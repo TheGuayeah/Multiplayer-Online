@@ -36,7 +36,7 @@ namespace Complete
 
         void Update()
         {
-            if(isServer)
+            if(gameStarted)
                 SetPlayerObjective();
         }
 

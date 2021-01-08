@@ -61,6 +61,7 @@ namespace Complete {
                             0.0f);
                         player.myTeamItem = item;
                         player.myTeamItem.GetComponentInChildren<TextMeshProUGUI>().text = item.name;
+                        player.CmdSetTeamBool(true);
                         Debug.Log("UI item.name " + item.name);
                     }
                     count++;
