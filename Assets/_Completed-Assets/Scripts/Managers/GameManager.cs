@@ -107,22 +107,35 @@ namespace Complete
         private bool OneTeamLeft()
         {
             // Start the count of tanks left at zero
-            int team1TanksLeft = 0;
-            int team2TanksLeft = 0;
+            bool team1ExistsYet = false;
+            bool team2ExistsYet = false;
+
+            int teamsLeft = 0;
 
             // Go through all the tanks...
             for (int i = 0; i < m_Tanks.Length; i++)
             {
                 // ... and if they are active, increment the counter
-                if (m_Tanks[i].m_Instance.activeSelf && m_Tanks[i].m_Instance.GetComponent<InfoPlayer>() != null)
+                if (m_Tanks[i].m_Instance.activeSelf)
                 {
-                    if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1)
-                        team1TanksLeft++;
-                    else
-                        team2TanksLeft++;
-                }
+                    if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>() != null) {
+                        if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1) {
+                            if (!team1ExistsYet) {
+                                teamsLeft++;
+                                team1ExistsYet = true;
+                            }
+                        } else {
+                            if (!team2ExistsYet) {
+                                teamsLeft++;
+                                team2ExistsYet = true;
+                            }
+                        }
+                    } else
+                        teamsLeft++;
+                    
+                } 
             }
-            return team1TanksLeft == 0 || team2TanksLeft == 0;
+            return teamsLeft <= 1;
         }
 
         private void AddToTankList(GameObject gameObj)
@@ -156,6 +169,10 @@ namespace Complete
 
             // Reconfiguramos la lista de objetivos de la cámara
             //gameManager.SetCameraTargets();
+        }
+
+        public void StartGame() {
+            StartCoroutine(GameLoop());
         }
 
         public void SetCameraTargets()
@@ -195,7 +212,7 @@ namespace Complete
 
             // Once the 'RoundStarting' coroutine is finished, run the 'RoundPlaying' coroutine but don't return until it's finished
             yield return StartCoroutine (RoundPlaying());
-            Debug.Log("GameLoop end playing");
+
             // Once execution has returned here, run the 'RoundEnding' coroutine, again don't return until it's finished
             yield return StartCoroutine (RoundEnding());
 
@@ -247,16 +264,15 @@ namespace Complete
             // While there is not one tank left...
             while ((!playNetworking.activeTeams && !OneTankLeft()) || (playNetworking.activeTeams && !OneTeamLeft()))
             {
+
                 // ... return on the next frame
                 yield return null;
             }
-            Debug.Log("end playing");
         }
 
 
         private IEnumerator RoundEnding()
         {
-            Debug.Log("Round ending");
             // Stop tanks from moving
             DisableTankControl();
 
@@ -268,21 +284,39 @@ namespace Complete
 
             // If there is a winner, increment their score
             if (m_RoundWinner != null)
-            {
-                m_RoundWinner.m_Wins++;
+            {             
+                int wins = m_RoundWinner.m_Movement.wins;
+
+                if (m_RoundWinner.m_Instance.CompareTag("Enemy"))
+                    m_RoundWinner.m_Movement.wins = wins+1;
+                else if (m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().LocalPlayer()) {
+                    if (playNetworking.activeTeams)
+                        wins = GetTeamHighestWin(wins, m_RoundWinner.m_Instance.GetComponent<InfoPlayer>().team1);
+
+                    m_RoundWinner.m_Movement.UpdateWins(wins+1);
+                }
             }
 
             // Now the winner's score has been incremented, see if someone has one the game
-            m_GameWinner = GetGameWinner();
+            m_GameWinner = GetGameWinner(m_RoundWinner);
 
             // Get a message based on the scores and whether or not there is a game winner and display it
-            string message = EndMessage();
+            string message = playNetworking.activeTeams ? EndMessageTeams() : EndMessage();
             m_MessageText.text = message;
 
             // Wait for the specified length of time until yielding control back to the game loop
             yield return m_EndWait;
         }
 
+
+        private int GetTeamHighestWin(int currentWin, bool team1) {
+            GameObject[] tanksInGame = GameObject.FindGameObjectsWithTag("Player");
+            for (int i = 0; i < tanksInGame.Length; i++)
+                if (team1 == tanksInGame[i].GetComponent<InfoPlayer>().team1)
+                    if (tanksInGame[i].GetComponent<TankMovement>().wins > currentWin)
+                        currentWin = tanksInGame[i].GetComponent<TankMovement>().wins;
+            return currentWin;
+        }
 
         // This is used to check if there is one or fewer tanks remaining and thus the round should end
         private bool OneTankLeft()
@@ -323,19 +357,12 @@ namespace Complete
 
 
         // This function is to find out if there is a winner of the game
-        private TankManager GetGameWinner()
+        private TankManager GetGameWinner(TankManager roundWinner)
         {
-            // Go through all the tanks...
-            for (int i = 0; i < m_Tanks.Length; i++)
-            {
-                // ... and if one of them has enough rounds to win the game, return it
-                if (m_Tanks[i].m_Wins == m_NumRoundsToWin)
-                {
-                    return m_Tanks[i];
-                }
+            if (roundWinner.m_Movement.wins >= m_NumRoundsToWin) {
+                return roundWinner;
             }
 
-            // If no tanks have enough rounds to win, return null
             return null;
         }
 
@@ -387,6 +414,48 @@ namespace Complete
                 {
                     message = m_GameWinner.m_playerName + " WINS THE GAME!";
                 }
+            }
+
+            return message;
+        }
+
+        private string EndMessageTeams() {
+            // By default when a round ends there are no winners so the default end message is a draw
+            string message = "DRAW!";
+
+            // If there is a winner then change the message to reflect that
+            if (m_RoundWinner != null) {
+                message = m_RoundWinner.m_ColoredPlayerText + " WINS THE ROUND!";
+            }
+
+            // Add some line breaks after the initial message
+            message += "\n\n\n\n";
+
+
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                if (!m_Tanks[i].m_Instance.CompareTag("Enemy") && m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1) {
+                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Movement.wins + " WINS\n";
+                    break;
+                }
+            }
+
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                if (!m_Tanks[i].m_Instance.CompareTag("Enemy") && !m_Tanks[i].m_Instance.GetComponent<InfoPlayer>().team1) {
+                    message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Movement.wins + " WINS\n";
+                    break;
+                }
+            }
+
+            for (int i = 0; i < m_Tanks.Length; i++) {
+                if (m_Tanks[i].m_Instance.GetComponent<InfoPlayer>() == null) {
+                    message += "NPC " + i + ": " + m_Tanks[i].m_Wins + " WINS\n";
+                    break;
+                }
+            }
+
+            // If there is a game winner, change the entire message to reflect that
+            if (m_GameWinner != null) {
+                message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
             }
 
             return message;

@@ -657,14 +657,13 @@ namespace Mirror
             if (NetworkClient.isConnected)
             {
                 StopClient();
-                print("OnApplicationQuit: stopped client");
+
             }
 
             // stop server after stopping client (for proper host mode stopping)
             if (NetworkServer.active)
             {
                 StopServer();
-                print("OnApplicationQuit: stopped server");
             }
         }
 
@@ -696,19 +695,16 @@ namespace Mirror
             {
                 if (singleton != null)
                 {
-                    logger.LogWarning("Multiple NetworkManagers detected in the scene. Only one NetworkManager can exist at a time. The duplicate NetworkManager will be destroyed.");
                     Destroy(gameObject);
 
                     // Return false to not allow collision-destroyed second instance to continue.
                     return false;
                 }
-                logger.Log("NetworkManager created singleton (DontDestroyOnLoad)");
                 singleton = this;
                 if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             }
             else
             {
-                logger.Log("NetworkManager created singleton (ForScene)");
                 singleton = this;
             }
 

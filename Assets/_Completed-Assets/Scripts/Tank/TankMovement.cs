@@ -14,6 +14,8 @@ namespace Complete
         public int playerColor;
         [SyncVar]
         public bool team1;
+        [SyncVar]
+        public int wins;
 
         public int m_PlayerNumber = 1;              // Used to identify which tank belongs to which player.  This is set by this tank's manager
         public float m_Speed = 12f;                 // How fast the tank moves forward and back
@@ -61,7 +63,22 @@ namespace Complete
 
             ChangeTankAndNameColor();
         }
-        
+
+        public void UpdateWins(int wins) {
+            CmdUpdateWins(wins);
+        }
+
+        [Command]
+        public void CmdUpdateWins(int newWins) {
+            wins = newWins;
+            RpcUpdateWins(newWins);
+        }
+
+        [ClientRpc]
+        public void RpcUpdateWins(int newWins) {
+            wins = newWins;
+        }
+
         private void OnEnable()
         {
             // When the tank is turned on, make sure it's not kinematic

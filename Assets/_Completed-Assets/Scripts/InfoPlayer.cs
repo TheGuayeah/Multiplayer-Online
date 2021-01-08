@@ -77,7 +77,7 @@ namespace Complete
         public void RpcStartGame(bool newBool)
         {
             if (gameManager.canvasTeams.activeSelf) gameManager.canvasTeams.SetActive(false);
-            StartCoroutine(gameManager.GameLoop());
+            gameManager.StartGame();
         }
 
         public void StartGameClient(bool newBool)
